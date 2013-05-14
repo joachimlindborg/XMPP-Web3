@@ -1,0 +1,1962 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>XEP-xxxx: HTTP over XMPP transport</title>
+    <link rel="stylesheet" type="text/css" href="xmpp.css">
+    <link href="prettify.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><script type="text/javascript" src="prettify.js"></script><meta name="DC.Title" content="HTTP over XMPP transport">
+    <meta name="DC.Creator" content="Peter Waher">
+    <meta name="DC.Description" content="This specification defines how XMPP can be used to transport HTTP communication over peer-to-peer networks.">
+    <meta name="DC.Publisher" content="XMPP Standards Foundation">
+    <meta name="DC.Contributor" content="XMPP Extensions Editor">
+    <meta name="DC.Date" content="2013-05-10">
+    <meta name="DC.Type" content="XMPP Extension Protocol">
+    <meta name="DC.Format" content="XHTML">
+    <meta name="DC.Identifier" content="XEP-xxxx">
+    <meta name="DC.Language" content="en">
+    <meta name="DC.Rights" content="This XMPP Extension Protocol is copyright (c) 1999 - 2013 by the XMPP Standards Foundation (XSF).">
+  </head>
+  <body onload="prettyPrint()">
+    <h1>XEP-xxxx: HTTP over XMPP transport</h1>
+    <table>
+      <tr valign="top">
+        <td><strong>Abstract:</strong></td>
+        <td>This specification defines how XMPP can be used to transport HTTP communication over peer-to-peer networks.</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Author:</strong></td>
+        <td>Peter Waher</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Copyright:</strong></td>
+        <td>© 1999 - 2013 XMPP Standards Foundation. <a href="#appendix-legal">SEE LEGAL NOTICES</a>.</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Status:</strong></td>
+        <td>ProtoXEP</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Type:</strong></td>
+        <td>Standards Track</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Version:</strong></td>
+        <td>0.0.3</td>
+      </tr>
+      <tr valign="top">
+        <td><strong>Last Updated:</strong></td>
+        <td>2013-05-10</td>
+      </tr>
+    </table>
+    <hr>
+    <p style="color:red">WARNING: This document has not yet been accepted for consideration or approved in any official manner by the XMPP Standards Foundation, and this document is not yet an XMPP Extension Protocol (XEP). If this document is accepted as a XEP by the XMPP Council, it will be published at &lt;<a href="http://xmpp.org/extensions/">http://xmpp.org/extensions/</a>&gt; and announced on the &lt;standards@xmpp.org&gt; mailing list.</p>
+    <hr>
+    <h2>Table of Contents</h2>
+    <div class="indent">
+      <p><br>1.  <a href="#intro">Introduction</a><br>2.  <a href="#reqs">Requirements</a><br>3.  <a href="#glossary">Glossary</a><br>4.  <a href="#usecases">Use Cases</a><br>   
+      4.1.  <a href="#sect-ID0EGKAC">HTTP Methods</a><br>      
+      4.1.1.  <a href="#OPTIONS">OPTIONS</a><br>      
+      4.1.2.  <a href="#GET">GET</a><br>      
+      4.1.3.  <a href="#HEAD">HEAD</a><br>      
+      4.1.4.  <a href="#POST">POST</a><br>      
+      4.1.5.  <a href="#PUT">PUT</a><br>      
+      4.1.6.  <a href="#DELETE">DELETE</a><br>      
+      4.1.7.  <a href="#TRACE">TRACE</a><br>      
+      4.1.8.  <a href="#PATCH">PATCH</a><br>   
+      4.2.  <a href="#sect-ID0ELAAE">Response formats</a><br>      
+      4.2.1.  <a href="#sect-ID0EWAAE">Text</a><br>      
+      4.2.2.  <a href="#sect-ID0EJBAE">XML</a><br>      
+      4.2.3.  <a href="#sect-ID0ERCAE">Base-64 encoding</a><br>      
+      4.2.4.  <a href="#sect-ID0EEDAE">Chunked Base-64 encoding</a><br>      
+      4.2.5.  <a href="#sect-ID0EZEAE">File</a><br>      
+      4.2.6.  <a href="##streams">Streams</a><br>      
+      4.2.7.  <a href="#jingle">Jingle</a><br>   
+      4.3.  <a href="#sect-ID0EFIAE">Applications</a><br>      
+      4.3.1.  <a href="#sect-ID0ENIAE">Browsers</a><br>        
+      4.3.1.1.  <a href="#xmppscheme">xmpp:// scheme</a><br>        
+      4.3.1.2.  <a href="#sect-ID0EKKAE">Friendship requests</a><br>        
+      4.3.1.3.  <a href="#sect-ID0E6LAE">Seamless use of web applications hosted at home</a><br>      
+      4.3.2.  <a href="#sect-ID0ERNAE">Web Services</a><br>        
+      4.3.2.1.  <a href="#sect-ID0EZNAE">SOAP</a><br>        
+      4.3.2.2.  <a href="#sect-ID0ETOAE">REST</a><br>      
+      4.3.3.  <a href="#sect-ID0ENPAE">Semantic Web &amp; IoT</a><br>        
+      4.3.3.1.  <a href="#sect-ID0EOQAE">Turtle</a><br>        
+      4.3.3.2.  <a href="#sect-ID0ELRAE">RDF</a><br>        
+      4.3.3.3.  <a href="#sect-ID0EOSAE">SPARQL</a><br>      
+      4.3.4.  <a href="#sect-ID0EITAE">Streams</a><br>5.  <a href="#support">Determining Support</a><br>6.  <a href="#impl">Implementation Notes</a><br>   
+      6.1.  <a href="#httpconnections">Connection handling</a><br>   
+      6.2.  <a href="#headers">HTTP Headers</a><br>   
+      6.3.  <a href="#sect-ID0ECYAE">Stanza Sizes</a><br>   
+      6.4.  <a href="#sect-ID0EPYAE">Bandwidth Limitations</a><br>7.  <a href="#security">Security Considerations</a><br>   
+      7.1.  <a href="#rosterclient">Roster handling in browsers</a><br>   
+      7.2.  <a href="#rosterserver">Roster handling in web servers</a><br>      
+      7.2.1.  <a href="#sect-ID0EWZAE">Public Server</a><br>      
+      7.2.2.  <a href="#sect-ID0ED1AE">Manual Server</a><br>      
+      7.2.3.  <a href="#sect-ID0EQ1AE">Private Server</a><br>      
+      7.2.4.  <a href="#sect-ID0EZ1AE">Provisioned Server</a><br>8.  <a href="#iana">IANA Considerations</a><br>9.  <a href="#registrar">XMPP Registrar Considerations</a><br>10.  <a href="#schema">XML Schema</a><br>11.  <a href="#ack">Acknowledgements</a></p>
+      <p><a href="#appendices">Appendices</a><br>    <a href="#appendix-docinfo">A: Document Information</a><br>    <a href="#appendix-authorinfo">B: Author Information</a><br>    <a href="#appendix-legal">C: Legal Notices</a><br>    <a href="#appendix-xmpp">D: Relation to XMPP</a><br>    <a href="#appendix-discuss">E: Discussion Venue</a><br>    <a href="#appendix-conformance">F: Requirements Conformance</a><br>    <a href="#appendix-notes">G: Notes</a><br>    <a href="#appendix-revs">H: Revision History</a></p>
+    </div>
+    <hr>
+    <h2>1.
+       <a name="intro">Introduction</a></h2>
+        <p class="" style="">
+            Many documents have been written about how to transport XMPP datagrams using HTTP. The motivation behind such solutions has often been to be able to use XMPP in
+            scripting languages such as Java Script running in web browsers.
+        </p>
+        <p class="" style="">
+            But very little has been written up to this point about the reverse: How to transport HTTP methods and HTTP responses over an XMPP-based peer-to-peer network.
+            Here, the motivation is as follows: There are multitudes of applications and APIs written that are based on HTTP over TCP as the basic communication transport protocol.
+            As these are moving closer and closer to the users, problems arise when the users want to protect their data and services using firewalls. Even though there are methods
+            today to open up firewalls manually or automatically permit communication with such devices and applications, you still open up the application for everybody. This
+            rises the need for more advanced security measures which is sometimes difficult to implement using HTTP.
+        </p>
+        <p class="" style="">
+            The XMPP protocol however does not have the same problems as HTTP in these regards. It's a peer-to-peer protocol naturally allowing communication with applications
+            and devices behind firewalls. It also includes advanced user authentication and authorization which makes it easier to make sure unauthorized access to private
+            content is prevented.
+        </p>
+        <p class="" style="">
+            Furthermore, with the advent of semantic web technologies and its use in web 3.0 and Internet of Things applications, such applications move even more rapidly into
+            the privte spheres of the users, where security and privacy is of paramount importance, the need to use more secure transport protocols than HTTP over TCP is necessary.
+        </p>
+        <p class="" style="">
+            There are many different types of HTTP-based communication that one would like to be able to transport over XMPP. A non-exhaustive list can include:
+        </p>
+        <ul class="" style="">
+            <li class="" style="">Web Content like pages, images, files, etc.</li>
+            <li class="" style="">Web Forms.</li>
+            <li class="" style="">Web Services (SOAP, REST, etc.)</li>
+            <li class="" style="">Semantic Web Resources (RDF, Turtle, etc.)</li>
+            <li class="" style="">Federated SPARQL queries (SQL-type query language for the semantic web, or web 3.0)</li>
+            <li class="" style="">Streamed multi-media content in UPnP and DLNA networks.</li>
+        </ul>
+        <p class="" style="">
+            Instead of trying to figure out all possible things transportable over HTTP and make them transportable over XMPP, this document ignores the type of content transported,
+            and instead focuses on encoding and decoding the original HTTP requests and responses, building an HTTP tunnel over an existing XMPP connection. It would enable
+            existing applications to work seamlessly over XMPP if browsers and web services supported this extension (like displaying your home control application on your phone
+            when you are at work), without the need to update the myriad of existing applications. It would also permit federated SPARQL queries in personal networks with the added 
+            benefit of being able to control who can talk to who (or what can talk to what) through established friendship relationships.
+        </p>
+        <p class="" style="">
+            Previous extensions handling different aspects of XMPP working together with HTTP:
+        </p>
+        <ul class="" style="">
+            <li class="" style="">
+                <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0070.html">Verifying HTTP Requests via XMPP</a></span>  [<a href="#nt-ID0EJG">1</a>]: This specification handles client authentication of resources, where there are three parties: HTTP Client &lt;-&gt; HTTP Server/XMPP Client &lt;-&gt; XMPP Server.
+                Here HTTP Client authentication to resources on the HTTP Server is made by a third party, an XMPP Server.
+            </li>
+            <li class="" style="">
+                <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0072.html">SOAP over XMPP</a></span>  [<a href="#nt-ID0E1G">2</a>]: This speification handles execution of SOAP-based web services specifically. This specification have some benefits regarding to Web Service calls over XMPP,
+                but is only one example of all types of HTTP-based communucation one would desire to transport over XMPP.
+            </li>
+            <li class="" style="">
+                <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0124.html">BOSH</a></span>  [<a href="#nt-ID0ELH">3</a>]: This specification handles XMPP-based communication over HTTP sessions (BOSH), allowing for instance, java script to communicate using XMPP using the
+                XML HTTP Request object. This is in some way the reverse of what this document proposes to do.
+            </li>
+            <li class="" style="">
+                <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0131.html">Stanza Headers and Internet Metadata</a></span>  [<a href="#nt-ID0E3H">4</a>]: While not directly related to HTTP, it is used to transport headers in the form of collections of key-value pairs, exactly as is done in HTTP. The format
+                for encoding headers into XMP defined by this XEP will be re-used in this XEP.
+            </li>
+            <li class="" style="">
+                <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0147.html">XMPP URI Query Components</a></span>  [<a href="#nt-ID0EOAAC">5</a>]: This informational specification proposes ways to define XMPP-actions using URL's. This document will propose a different URI scheme for HTTP-based resources
+                over an XMPP transport.
+            </li>
+        </ul>
+    <h2>2.
+       <a name="reqs">Requirements</a></h2>
+        <p class="" style="">
+            This document presupposes the server already has a web server (HTTP Server) implementation, and that it hosts content through it, content which can be both
+            dynamic (i.e. generated) or static (for example files) in nature. Content, which it wants to
+            publish to XMPP clients as well as HTTP clients. It also presupposes that the client is aware of HTTP semantics and MIME encoding.
+        </p>
+    <h2>3.
+       <a name="glossary">Glossary</a></h2>
+        <p class="" style="">The following table lists common terms and corresponding descriptions.</p>
+        <div class="indent">
+      <dl>
+            <di>
+                <dt><strong>HTTP</strong></dt>
+                <dd>
+                    Hyper Text Transfer Protocol. Version 1.1 of HTTP is described in  [<a href="#nt-ID0EQBAC">6</a>]. The PATCH method is described in  [<a href="#nt-ID0EWBAC">7</a>]
+                </dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Client</strong></dt>
+                <dd>An HTTP Client is the initiator of an HTTP Request.</dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Method</strong></dt>
+                <dd>
+                    HTTP Methods are: <span class="strong">OPTIONS</span>, <span class="strong">GET</span>, <span class="strong">HEAD</span>, <span class="strong">POST</span>,
+                    <span class="strong">PUT</span>, <span class="strong">DELETE</span>, <span class="strong">TRACE</span> and <span class="strong">PATCH</span>. The HTTP
+                    Method CONNECT is not supported by this specification.
+                </dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Request</strong></dt>
+                <dd>An HTTP Request consists of a Method, version information, headers and optional body.</dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Resource</strong></dt>
+                <dd>A resouce on an HTTP Server identified by a path. Each path begins with a separator character (/).</dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Response</strong></dt>
+                <dd>An HTTP Response consists of a status code, optional status message, headers and optional body.</dd>
+            </di>
+            <di>
+                <dt><strong>HTTP Server</strong></dt>
+                <dd>An HTTP Server responds to HTTP Client requests.</dd>
+            </di>
+            <di>
+                <dt><strong>Web Server</strong></dt>
+                <dd>Used synonymously with HTTP Server.</dd>
+            </di>
+        </dl>
+    </div>
+    <h2>4.
+       <a name="usecases">Use Cases</a></h2>
+        <p class="" style="">
+            All HTTP communication is done usig the <span class="strong">Request</span>/<span class="strong">Response</span> paradigm. Each HTTP Request is made sending an <span class="strong">iq</span>-stanza
+            containing a <span class="strong">req</span> element to the server. Each <span class="strong">iq</span>-stanza sent is of type <span class="strong">get</span> (not to be confused by the HTTP Method
+            <span class="strong">GET</span>).
+        </p>
+        <p class="" style="">
+            When the server responds, it does so by sending an <span class="strong">iq</span>-stanza response (type <span class="strong">result</span>) back to the client containing a <span class="strong">resp</span>
+            element. Since responses are asynchronous, and since multiple requests may be active at the same time, responses may be returned in a different order than the in which the
+            original requests were made.
+        </p>
+        <p class="" style="">
+            Requests or responses containing data must also consider how this data should be encoded within the XML telegram. Normally in HTTP, content and headers are separated
+            by a blank line, and the transfer of the content is made in the same stream. Specific HTTP headers are used to define how the content is transfered and encoded within
+            the stream (Content-Type, Content-Length, Content-Encoding, Content-Transfer-Encoding). This approach is not possible if the response is to be inbedded in an XML telegram,
+            since it can interfere with the encoding of the encompassing XML.
+        </p>
+        <p class="" style="">
+            To solve this, this document specifies additional data transfer mechanisms that are compatible with the XMPP protocol. The normal HTTP-based content transfer headers will
+            still be transported, but do not affect the content encoding used in the XMPP transport. The following content encoding methods are available:
+        </p>
+        <ul class="" style="">
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">text</span>: Normal text content. The text is encoded as text within XML, using the same encoding used by the XML stream. XML escape characters (&lt;, &gt; and &amp;)
+                    are escaped using the normal &amp;lt;, &amp;gt; and &amp;amp; character escape sequences.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">xml</span>: Xml content embedded in the XML telegram. Note however, that any processing instructions or XML version statements must be avoided, since it may cause
+                    the XML stream to become invalid XML. If this is a problem, normal <span class="strong">text</span> encoding can be used as an alternative. The advantage of <span class="strong">xml</span>
+                    instead of <span class="strong">text</span> or <span class="strong">base64</span> encodings is when used in conjuncion with EXI compression <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0322.html">Efficient XML Interchange (EXI) Format</a></span>  [<a href="#nt-ID0EUGAC">8</a>]. EXI compression has the ability to
+                    compress XML efficiently. Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33%
+                    size gain induced by the encoding is recaptured.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">base64</span>: Base-64 encoded binary content. Can be used to easily embed binary content in the telegram.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">chunkedBase64</span>: Chunked Base-64 encoded binary content. The content is not embedded in the telegram. Instead it is sent in chunks, using separate
+                    <span class="strong">chunk</span> messages to the client. Chunked transport can be used by the server when it doesn't know the size of the final result. Chunked transport is
+                    similar to the <span class="strong">streamBase64</span> encoding with the (loose) distinction that a stream is indefinite, while chunked transport conveys finitely sized content.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">sipub</span>: The sender might deem the content to be too large for sending embedded in the XMPP telegram. To circumnavigate this, the sender publishes
+                    the content as a file using <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0137.html">Publishing Stream Initiation Requests</a></span>  [<a href="#nt-ID0EIIAC">9</a>] (Publishing Stream Initiation Requests), instead of embedding the content directly. This might be the case for instance, when
+                    a client requests a video resource, without using a ranged request.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">streamBase64</span>: This option may be used to encode indefinite streams, like live audio or video streams (HLS, SHOUTcast, Motion JPeg web cams, etc). It works
+                    as <span class="strong">chunkedBase64</span> with the distinction that the content is indefinite. This option is not available in requests, only in responses.
+                </p>
+            </li>
+            <li class="" style="">
+                <p class="" style="">
+                    <span class="strong">jingle</span>: For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
+                    required. Even though the <span class="strong">streamBase64</span> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
+                    or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
+                    and streamed, the server can negotiate a different way to stream the content using <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0166.html">Jingle</a></span>  [<a href="#nt-ID0EQJAC">10</a>].
+                </p>
+            </li>
+        </ul>
+        <p class="" style="">
+            <span class="strong">Note:</span> Content encoded using <span class="strong">chunkedBase64</span> or <span class="strong">streamBase64</span> encoding methods can be terminated, either by the receptor going
+            off-line, or by sending a <span class="strong">close</span> command to the sender.
+        </p>
+        <div class="indent">
+      <h3>4.1 <a name="sect-ID0EGKAC">HTTP Methods</a></h3>
+            <p class="" style="">
+                The following use cases show how different HTTP methods may work when transported over XMPP. To facilitate the readability in these examples,
+                simple text or xml results are shown.
+            </p>
+            <div class="indent">
+        <h3>4.1.1 <a name="OPTIONS">OPTIONS</a></h3>
+                <p class="" style="">
+                    This section shows an example of an OPTIONS method call. OPTIONS is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.2">§9.2 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-1"></a>Example 1. OPTIONS</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='1'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='OPTIONS' resource='*' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='1'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 13:52:10 GMT-4&lt;/header&gt;
+              &lt;header name='Allow'&gt;OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;0&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.1.2 <a name="GET">GET</a></h3>
+                <p class="" style="">
+                    This section shows an example of a GET method call. GET is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.3">§9.3 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-2"></a>Example 2. GET</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='2'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='GET' resource='/rdf/ex1.turtle' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='2'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/turtle&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+              &lt;header name='Connection'&gt;Close&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;@base &amp;lt;http://example.org/&amp;gt; .
+@prefix rdf: &amp;lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&amp;gt; .
+@prefix rdfs: &amp;lt;http://www.w3.org/2000/01/rdf-schema#&amp;gt; .
+@prefix foaf: &amp;lt;http://xmlns.com/foaf/0.1/&amp;gt; .
+@prefix rel: &amp;lt;http://www.perceive.net/schemas/relationship/&amp;gt; .
+
+&amp;lt;#green-goblin&amp;gt;
+    rel:enemyOf &amp;lt;#spiderman&amp;gt; ;
+    a foaf:Person ;    # in the context of the Marvel universe
+    foaf:name "Green Goblin" .
+
+&amp;lt;#spiderman&amp;gt;
+    rel:enemyOf &amp;lt;#green-goblin&amp;gt; ;
+    a foaf:Person ;
+    foaf:name "Spiderman", "Человек-паук"@ru .&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+                <p class="" style="">
+                    <span class="strong">Note:</span> The XMPP/HTTP bridge at the server only transmits headers literally as they are reported, as if it was normal HTTP over TCP
+                    that was used. In the HTTP over XMPP case, connections are not handled in the same way, and so the "Connection: Close" header has no meaning in this
+                    case. For more information about connection handling in the HTTP over XMPP case, see the section on <a href="#httpconnections">Connection Handling</a>.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note 2:</span> The above Turtle example was taken from <a href="http://www.w3.org/TR/turtle/#sec-intro">http://www.w3.org/TR/turtle/#sec-intro</a>.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>4.1.3 <a name="HEAD">HEAD</a></h3>
+                <p class="" style="">
+                    This section shows an example of a HEAD method call. HEAD is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.4">§9.4 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-3"></a>Example 3. HEAD</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='3'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='HEAD' resource='/video/video1.m4' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='3'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:57:12GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;video/mp4&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;12345678&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.1.4 <a name="POST">POST</a></h3>
+                <p class="" style="">
+                    This section shows an example of a POST method call. POST is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.5">§9.5 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-4"></a>Example 4. POST</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='4'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='POST' resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+              &lt;header name='User-agent'&gt;Clayster HTTP/XMPP Client&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/sparql-query&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;PREFIX foaf: &amp;lt;http://xmlns.com/foaf/0.1/&amp;gt;
+SELECT ?name ?mbox ?hpage
+WHERE  { ?x foaf:name  ?name .
+         OPTIONAL { ?x foaf:mbox ?mbox } .
+         OPTIONAL { ?x foaf:homepage ?hpage }
+       }
+&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='4'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:09:34-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/sparql-results+xml&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;sparql xmlns="http://www.w3.org/2005/sparql-results#"&gt;
+                      &lt;head&gt;
+                          &lt;variable name="name"/&gt;
+                          &lt;variable name="mbox"/&gt;
+                          &lt;variable name="hpage"/&gt;
+                      &lt;/head&gt;
+                      &lt;results&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Alice&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="hpage"&gt;
+                                  &lt;literal&gt;&amp;lt;http://work.example.org/alice/&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Bob&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="mbox"&gt;
+                                  &lt;literal&gt;&amp;lt;mailto:bob@work.example&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                      &lt;/results&gt;
+                  &lt;/sparql&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+                <p class="" style="">
+                    <span class="strong">Note:</span> The above SPARQL example was taken from <a href="http://www.w3.org/TR/sparql11-query/#MultipleOptionals">http://www.w3.org/TR/sparql11-query/#MultipleOptionals</a>
+                    in combination with <a href="http://www.w3.org/TR/sparql11-protocol/#select-longpost">http://www.w3.org/TR/sparql11-protocol/#select-longpost</a>.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note 2:</span> If using <span class="strong">xml</span> encoding of data, care has to be taken to avoid including the version and encoding information 
+                    (&lt;?xml version="1.0"?&gt;) at the top of the document, otherwise the resulting XML will be invalid.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>4.1.5 <a name="PUT">PUT</a></h3>
+                <p class="" style="">
+                    This section shows an example of a PUT method call. PUT is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.6">§9.6 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-5"></a>Example 5. PUT</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='5'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='PUT' resource='/index.html' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/html&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;&amp;lt;html&amp;gt;&amp;lt;header/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Beautiful home page.&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='5'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='204' statusMessage='No Content'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:40:41GMT-4&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;0&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.1.6 <a name="DELETE">DELETE</a></h3>
+                <p class="" style="">
+                    This section shows an example of a DELETE method call. DELETE is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.7">§9.7 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-6"></a>Example 6. DELETE</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='6'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='DELETE' resource='/index.html' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='6'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='403' statusMessage='Forbidden'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:46:07GMT-4&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/plain&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;You're not allowed to change the home page!&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.1.7 <a name="TRACE">TRACE</a></h3>
+                <p class="" style="">
+                    This section shows an example of a TRACE method call. TRACE is described in <a href="http://tools.ietf.org/html/rfc2616#section-9.8">§9.8 in RFC 2616</a>.
+                </p>
+                <p class="caption"><a name="example-7"></a>Example 7. TRACE</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='7'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='TRACE' resource='/rdf/ex1.turtle' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='7'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:55:10GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;message/http&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;GET /rdf/ex1.turtle HTTP/1.1
+Host: clayster.com&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+                <p class="" style="">
+                    <span class="strong">Note:</span> The Trace command returns the request it received from the client by the server. Here, however, it is assumed that the request
+                    is made over HTTP/TCP, not HTTP/XMPP. Therefore, in this example, the XMPP layer has transformed the HTTP/XMPP request into an HTTP/TCP-looking
+                    request, which is returned as the response to the TRACE Method call. RFC 2616 is silent to the actual format of the TRACE response
+                    (MIME TYPE message/http), and TRACE is only used (if not disabled for security reasons) for debugging connections and routing via proxies.
+                    Therefore, a response returning the original XMPP request should also be accepted by the caller.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>4.1.8 <a name="PATCH">PATCH</a></h3>
+                <p class="" style="">
+                    This section shows an example of a PATCH method call. PATCH is described in <a href="http://tools.ietf.org/html/rfc5789">RFC 5789</a>.
+                </p>
+                <p class="caption"><a name="example-8"></a>Example 8. PATCH</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='8'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='PATCH' resource='/file.txt' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;www.example.com&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/example&lt;/header&gt;
+              &lt;header name='If-Match'&gt;e0023aa4e&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;100&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              [description of changes]
+          &lt;/data&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='8'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='204' statusMessage='No Content'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Content-Location'&gt;/file.txt&lt;/header&gt;
+              &lt;header name='ETag'&gt;e0023aa4e&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <p class="" style="">
+                <span class="strong">Note:</span> The example is taken from <a href="http://tools.ietf.org/html/rfc5789#section-2.1">§2.1 RFC 5789</a>.
+            </p>
+        </div>
+        <div class="indent">
+      <h3>4.2 <a name="sect-ID0ELAAE">Response formats</a></h3>
+            <p class="" style="">
+                In the following sub-sections, the different data encoding formats are discussed with corresponding examples to illustrate how they work.
+                The interesting part of these examples is the <span class="strong">data</span> element and its contents.
+            </p>
+            <div class="indent">
+        <h3>4.2.1 <a name="sect-ID0EWAAE">Text</a></h3>
+                <p class="" style="">
+                    Text responses is a simple way to return text responses (i.e. any MIME Type starting with text/). Since the text is embedded into XML, the
+                    characters &lt;, &gt; and &amp; need to be escaped to &amp;lt;, &amp;gt; and &amp;amp; respectively.
+                </p>
+                <p class="" style="">
+                    The following example shows how a TURTLE response, which is text-based, is returned using the <span class="strong">text</span> encoding:
+                </p>
+                <p class="caption"><a name="example-9"></a>Example 9. Text</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='2'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/turtle&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+              &lt;header name='Connection'&gt;Close&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;@base &amp;lt;http://example.org/&amp;gt; .
+@prefix rdf: &amp;lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&amp;gt; .
+@prefix rdfs: &amp;lt;http://www.w3.org/2000/01/rdf-schema#&amp;gt; .
+@prefix foaf: &amp;lt;http://xmlns.com/foaf/0.1/&amp;gt; .
+@prefix rel: &amp;lt;http://www.perceive.net/schemas/relationship/&amp;gt; .
+
+&amp;lt;#green-goblin&amp;gt;
+    rel:enemyOf &amp;lt;#spiderman&amp;gt; ;
+    a foaf:Person ;    # in the context of the Marvel universe
+    foaf:name "Green Goblin" .
+
+&amp;lt;#spiderman&amp;gt;
+    rel:enemyOf &amp;lt;#green-goblin&amp;gt; ;
+    a foaf:Person ;
+    foaf:name "Spiderman", "Человек-паук"@ru .&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.2.2 <a name="sect-ID0EJBAE">XML</a></h3>
+                <p class="" style="">
+                    XML is a conveniant way to return XML embedded in the XMPP response. This can be suitable for MIME Types of the form <span class="strong">.*/(.*[+])?xml</span>
+                    (using regular expression to match them), like text/xml, application/soap+xml or application/sparql-results+xml. Care has to be taken however, since
+                    not all XML constructs can be embedded as content to an XML element without invalidating it, like the xml version and encoding declaration
+                    (&lt;?xml version="1.0"?&gt; as an example).
+                </p>
+                <p class="" style="">
+                    If unsure how to handle XML responses using the <span class="strong">xml</span> encoding type, you can equally well use the <span class="strong">text</span> type, but
+                    encode the XML escape characters &lt;, &gt; and &amp;, or use another encoding, like <span class="strong">base64</span>.
+                </p>
+                <p class="" style="">
+                    The advantage of <span class="strong">xml</span> instead of <span class="strong">text</span> or <span class="strong">base64</span> encodings is when used in conjuncion with 
+                    <a href="http://xmpp.org/extensions/xep-0322.html">EXI compression</a>. EXI compression has the ability to compress XML efficiently. 
+                    Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33% size 
+                    gain induced by the encoding is recaptured.
+                </p>
+                <p class="caption"><a name="example-10"></a>Example 10. POST</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='4'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:09:34-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/sparql-results+xml&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;sparql xmlns="http://www.w3.org/2005/sparql-results#"&gt;
+                      &lt;head&gt;
+                          &lt;variable name="name"/&gt;
+                          &lt;variable name="mbox"/&gt;
+                          &lt;variable name="hpage"/&gt;
+                      &lt;/head&gt;
+                      &lt;results&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Alice&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="hpage"&gt;
+                                  &lt;literal&gt;&amp;lt;http://work.example.org/alice/&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Bob&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="mbox"&gt;
+                                  &lt;literal&gt;&amp;lt;mailto:bob@work.example&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                      &lt;/results&gt;
+                  &lt;/sparql&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.2.3 <a name="sect-ID0ERCAE">Base-64 encoding</a></h3>
+                <p class="" style="">
+                    Base-64 encoding is a simple way to encode content that is easilly embedded into XML. Apart from the advantage of being easy to encode, 
+                    it has the disadvantage to increase the size of the content by 33% (unless EXI compression is used at the same time), since it requires 
+                    4 bytes to encode 3 bytes of data. Care has to be taken not to send too large items using this encoding.
+                </p>
+                <p class="" style="">
+                    The following example shows an image is returned using the <span class="strong">base64</span> encoding:
+                </p>
+                <p class="caption"><a name="example-11"></a>Example 11. Base-64 encoding</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='9'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;image/png&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;221203&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;base64&gt;iVBORw0KGgoAAAANSUhEUgAAASwAAAGQCAYAAAAUdV17AAAAAXNSR0 ... tVWJd+e+y1AAAAABJRU5ErkJggg==&lt;/base64&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.2.4 <a name="sect-ID0EEDAE">Chunked Base-64 encoding</a></h3>
+                <p class="" style="">
+                    In HTTP, Chunked Transfer Encoding is used when the sender does not know the size of the content being sent, and to avoid having its buffers
+                    overflow, sends the content in chunks with a definite size.
+                </p>
+                <p class="" style="">
+                    A similar method exists in the HTTP over XMPP transport: The <span class="strong">chunkedBase64</span> allows the sender to transmit the content in chunks.
+                    Every chunk is base-64 encoded. The stream of chunks are identified by a <span class="strong">streamId</span> parameter, since chunks from different responses
+                    may be transmitted at the same time.
+                </p>
+                <p class="" style="">
+                    Another difference between normal chunked transport, and the <span class="strong">chunkedBase64</span> encoding, is that the size of chunks does not have to be
+                    predetermined. Chunks are naturally delimited and embedded in the XML stanza. The last chunk in a response must have the <span class="strong">last</span>
+                    attribute set to true.
+                </p>
+                <p class="caption"><a name="example-12"></a>Example 12. Chunked Base-64 encoding</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='10'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 04 May 2013 13:43:12GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;image/png&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;221203&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;chunkedBase64 streamId='Stream0001'/&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+   
+   &lt;message from='httpserver@clayster.com'
+            to='httpclient@clayster.com/browser'&gt;
+      &lt;chunk xmlns='urn:xmpp:http' streamid='Stream0001'&gt;iVBORw0KGgoAAAANSUhEUgAAASwAAAGQCAYAA ...&lt;/chunk&gt;
+   &lt;/message&gt;
+   
+   ...
+   
+   &lt;message from='httpserver@clayster.com'
+            to='httpclient@clayster.com/browser'&gt;
+      &lt;chunk xmlns='urn:xmpp:http' streamid='Stream0001' last='true'&gt;... 2uPzi9u+tVWJd+e+y1AAAAABJRU5ErkJggg==&lt;/chunk&gt;
+   &lt;/message&gt;
+                </pre>
+        </div>
+                <p class="" style="">
+                    <span class="strong">Note:</span> Chunked encoding assumes the content to be finite. If content is infinite (i.e. for instance live streaming),
+                    the <span class="strong">streamBase64</span> transfer encoding must be used instead. If the sender is unsure if the content is finit or inifinite,
+                    the <span class="strong">streamBase64</span> must be used.
+                </p>
+				<p class="" style="">
+					<span class="strong">Note 2:</span> If the web server sends chunked data to the client it uses the HTTP header <span class="strong">Transfer-Encoding: chunked</span>,
+					and then sends the data in chunks but with chunk sizes inserted so the receiving end can decode the incoming data. Note that this data will
+					be included in the data sent in the XMPP chunks defined by this document. In this case, data will be chunked twice: First by the web server,
+					and then by the HTTP over XMPP transport layer. When received by the client, it is first reassembled by the HTTP over XMPP layer on the client,
+					and then by the HTTP client who will read the original chunk size elements inserted into the content. More information about HTTP chunking,
+					can be found in <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1">RDF2616 §3.6.1</a>.
+				</p>
+            </div>
+            <div class="indent">
+        <h3>4.2.5 <a name="sect-ID0EZEAE">File</a></h3>
+                <p class="" style="">
+                    Often content being sent can be represented by a file, virtual or real, especially if the content actually represents a file and is not
+                    dynamically generated. In these instances, instead of embedding the contents in the response,
+                    since content can be potentially huge, a File Stream Initiation is returned instead, as defined in 
+                    <a href="http://xmpp.org/extensions/xep-0137.html">XEP 0137: Publishing Stream Initiation Requests</a>. This is done using the
+                    <span class="strong">sipub</span> element.
+                </p>
+                <p class="caption"><a name="example-13"></a>Example 13. File</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='11'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;image/png&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;221203&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;sipub xmlns='http://jabber.org/protocol/sipub'
+                     from='httpserver@clayster.com'
+                     id='file-0001'
+                     mime-type='image/png'
+                     profile='http://jabber.org/protocol/si/profile/file-transfer'&gt;
+                  &lt;file xmlns='http://jabber.org/protocol/si/profile/file-transfer'
+                        name='Kermit.png'
+                        size='221203'
+                        date='2013-03-06T16:47Z'/&gt;
+              &lt;/sipub&gt;              
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.2.6 <a name="#streams">Streams</a></h3>
+                <p class="" style="">
+                    Some web servers provide streaming content, i.e. content where packets are sent according to a timely fashion. Examples are video
+                    and audio streams like HLS (HTTP Live Streams), SHOUTcast, ICEcast, Motion JPeg, etc. In all these examples, content is infinite,
+                    and cannot be sent "all as quickly as possible". Instead, content is sent according to some kind of bitrate or frame rate for
+                    example.
+                </p>
+                <p class="" style="">
+                    Such content must use the <span class="strong">streamBase64</span> encoding scheme, if used. The <span class="strong">streamBase64</span> is similar to
+                    the <span class="strong">chunkedBase64</span> encoding, except it is imlicitly understood that the stream can be indefinite and needs an
+                    explicit way to close the stream. Closing the stream is done by sending a <span class="strong">close</span> command to the sender of the
+                    stream. The <span class="strong">close</span> command can also be used to close a chunked stream, and senders of chunked data should
+                    support terminating the output if a <span class="strong">close</span> command on the stream is received.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note:</span> All streams (or chunked responses) are automatically closed if one of the parties goes off-line.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note 2:</span> A streamed response does not need to be indefinite. It can be finite. If it is finite, the last chunk
+                    must have the <span class="strong">last</span> attribute set to true.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note 3:</span> The <span class="strong">close</span> command can be sent using a message or iq stanza. Use iq stanzas if a
+                    response is desired. The response will be the same close command sent.
+                </p>
+                <p class="caption"><a name="example-14"></a>Example 14. Streamed Base-64 encoding</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='12'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='GET' resource='/webcam1.jpg' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='12'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 04 May 2013 15:05:32GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;multipart/x-mixed-replace;boundary=__2347927492837489237492837&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;chunkedBase64 streamId='Stream0002'/&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+   
+   &lt;message from='httpserver@clayster.com'
+            to='httpclient@clayster.com/browser'&gt;
+      &lt;chunk xmlns='urn:xmpp:http' streamid='Stream0002'&gt;...&lt;/chunk&gt;
+   &lt;/message&gt;
+   
+   ...
+   
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='13'&gt;
+      &lt;close xmlns='urn:xmpp:http' streamId='Stream00002'/&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='13'&gt;
+      &lt;close xmlns='urn:xmpp:http' streamId='Stream00002'/&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+            </div>
+            <div class="indent">
+        <h3>4.2.7 <a name="jingle">Jingle</a></h3>
+                <p class="" style="">
+                    For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
+                    required. Even though the <span class="strong">streamBase64</span> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
+                    or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
+                    and streamed, the server can negotiate a different way to stream the content using <a href="http://xmpp.org/extensions/xep-0166.html">XEP 0166: Jingle</a>.
+                </p>
+                <p class="caption"><a name="example-15"></a>Example 15. Jingle</p>
+        <div class="indent">
+          <pre class="prettyprint">
+                    
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='14'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;video/mp4&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;jingle xmlns='urn:xmpp:jingle:1'
+                      action='session-initiate'
+                      initiator='romeo@montague.lit/orchard'
+                      sid='a73sjjvkla37jfea'&gt;
+                  &lt;content creator='initiator' name='voice'&gt;
+                      &lt;description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'&gt;
+                          &lt;payload-type id='96' name='speex' clockrate='16000'/&gt;
+                          &lt;payload-type id='97' name='speex' clockrate='8000'/&gt;
+                          &lt;payload-type id='18' name='G729'/&gt;
+                          &lt;payload-type id='0' name='PCMU' /&gt;
+                          &lt;payload-type id='103' name='L16' clockrate='16000' channels='2'/&gt;
+                          &lt;payload-type id='98' name='x-ISAC' clockrate='8000'/&gt;
+                      &lt;/description&gt;
+                      &lt;transport xmlns='urn:xmpp:jingle:transports:ice-udp:1'
+                                 pwd='asd88fgpdd777uzjYhagZg'
+                                 ufrag='8hhy'&gt;
+                          &lt;candidate component='1'
+                                     foundation='1'
+                                     generation='0'
+                                     id='el0747fg11'
+                                     ip='10.0.1.1'
+                                     network='1'
+                                     port='8998'
+                                     priority='2130706431'
+                                     protocol='udp'
+                                     type='host'/&gt;
+                          &lt;candidate component='1'
+                                     foundation='2'
+                                     generation='0'
+                                     id='y3s2b30v3r'
+                                     ip='192.0.2.3'
+                                     network='1'
+                                     port='45664'
+                                     priority='1694498815'
+                                     protocol='udp'
+                                     rel-addr='10.0.1.1'
+                                     rel-port='8998'
+                                     type='srflx'/&gt;
+                      &lt;/transport&gt;
+                  &lt;/content&gt;
+              &lt;/jingle&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                </pre>
+        </div>
+                <p class="" style="">
+                    <span class="strong">Note:</span> Example taken from <a href="http://xmpp.org/extensions/xep-0166.html#howitworks">XEP 166: Jingle</a>.
+                </p>
+                <p class="" style="">
+                    <span class="strong">Note2:</span> Using Jingle in this way makes it possible for an intelligent server to return multiple streams the client 
+                    can choose from, something that is not done in normal HTTP over TCP. The first candidate should however correspond to the same stream
+                    that would have been returned if the request had been made using normal HTTP over TCP.
+                </p>
+            </div>
+        </div>
+        <div class="indent">
+      <h3>4.3 <a name="sect-ID0EFIAE">Applications</a></h3>
+            <p class="" style="">
+                The following section lists use cases based on type of application. It is used to illustrate what types of applications would benefit from 
+                implementing this extension.
+            </p>
+            <div class="indent">
+        <h3>4.3.1 <a name="sect-ID0ENIAE">Browsers</a></h3>
+                <p class="" style="">
+                    HTTP began as a protocol for presenting text in browsers. So, browsers is a natural place to start to list use cases for this extensions.
+                    In general, content is identified using URL's, and in the browser a user enters the URL into Address Field of the browser, and the corresponding
+                    content is displayed in the display area. The content itself will probably contain links to other content, each such item identified
+                    by an absolute or relative URL.
+                </p>
+                <div class="indent">
+          <h3>4.3.1.1 <a name="xmppscheme">xmpp:// scheme</a></h3>
+                    <p class="" style="">
+                        A simplified way to describe an URL is to describe it as having three parts:
+                    </p>
+                    <ul class="" style="">
+                        <li class="" style="">Scheme</li>
+                        <li class="" style="">Domain</li>
+                        <li class="" style="">Path</li>
+                    </ul>
+                    <p class="" style="">
+                        In the HTTP over TCP case, the scheme is <span class="strong">http://</span> or <span class="strong">https://</span>, and the domain is the name or IP address of the
+                        web server with an optional port number. Some even allow for user credentials to be passed directly in the URL, something which is blocked in
+                        many browsers, for security reasons.
+                    </p>
+                    <p class="" style="">
+                        By creating a new scheme for HTTP over XMPP transport, and implementing support for it in web browsers, XML HTTP request objects and web servers,
+                        Web Applications previously requiring web hosting on the Internet will be able to be hosted privatly behind firewalls instead, by simply switching
+                        from the http:// scheme to an xmpp:// scheme. All relative URL's within the application, including URL's sent to the XHR object (Ajax) will automatically
+                        be directed to use the HTTP over XMPP transport instead.
+                    </p>
+                    <p class="" style="">
+                        So, this specification proposes a new transport for HTTP over XMPP, as follows:
+                    </p>
+                    <p class="caption"><a name="example-16"></a>Example 16. xmpp:// scheme</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   xmpp://Resourceless_JID/PATH
+                    </pre>
+          </div>
+                    <p class="" style="">
+                        Here, the JID to use in the URL, must not include a resource. Only user name, the @ character and the domain. The / separator between the JID
+                        and the Path is actually part of the Part.
+                    </p>
+                    <p class="caption"><a name="example-17"></a>Example 17. Examples of URLs with the xmpp scheme</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   xmpp://httpServer@clayster.com/index.html
+   xmpp://httpServer@clayster.com/images/image1.png
+   xmpp://httpServer@clayster.com/api?p1=a&amp;p2=b
+                    </pre>
+          </div>
+                </div>
+                <div class="indent">
+          <h3>4.3.1.2 <a name="sect-ID0EKKAE">Friendship requests</a></h3>
+                    <p class="" style="">
+                        It's beyond the scope of this specification to define how browsers handles its own XMPP account(s) and roster. This section only
+                        makes a suggestion to show how this can be handled. It is assumed in this discussion that the browser has a working XMPP
+                        connection with a server, and has its own JID. For simplicity, we will assume the browser has only one connection. Extension to
+                        multiple connection is canonical.
+                    </p>
+                    <p class="" style="">
+                        When resolving an URL using the xmpp scheme, the browser needs to extract the JID of the server hosting the resource. If that JID
+                        is already in the roster, the request can proceed as usual.
+                    </p>
+                    <p class="" style="">
+                        If not in the roster, the browser needs to send a friendship request. A non-exhaustive list of states could be made:
+                    </p>
+                    <ul class="" style="">
+                        <li class="" style="">No response: This could be presented as a connection to the content server being made.</li>
+                        <li class="" style="">Request rejected: This could be handled in the same way as HTTP Error Forbidden.</li>
+                        <li class="" style="">Request accepted: Connection made, proceed with fetching content.</li>
+                        <li class="" style="">Timeout: If no friendship request response have been returned, the browser can choose to time out.</li>
+                    </ul>
+                    <p class="" style="">
+                        Since XMPP works both ways, the browser can receive friendship requests from the outside world. Any such requests should be displayed to the
+                        end user, if any, or rejected.
+                    </p>
+                    <p class="" style="">
+                        For more information, see <a href="#rosterclient">Roster Handling in web clients</a> and 
+                        <a href="#rosterserver">Roster Handling in web servers</a>.
+                    </p>
+                </div>
+                <div class="indent">
+          <h3>4.3.1.3 <a name="sect-ID0E6LAE">Seamless use of web applications hosted at home</a></h3>
+                    <p class="" style="">
+                        Today, most people who want to host their own web applications (HTML/HTTP based applications) need to host them on a server publicly 
+                        available on the Internet. However, many applications of a private nature like a family blog, home automation system, etc., is not 
+                        suited for public hosting, since it puts all private data at risk of being compromised, or access to home security functions (like 
+                        home web cams) to get in the hands of people you don't want to have access to them.
+                    </p>
+                    <p class="" style="">
+                        To solve this, one can host the application on a server at home, perhaps a small cheap plug computer consuming as little as 1 or 2 Watts
+                        of electricity, using a web server supporting this extension. If the following design rules are followed, the application should be visible 
+                        in any browser also supporting this extensions, as long as friendship exists between the browser and the web server:
+                    </p>
+                    <ul class="" style="">
+                        <li class="" style="">
+                            <p class="" style="">
+                                Only relative URL's are used within references (images, audio, video, links, objekts, etc.). If absolute URL's are used (including scheme), 
+                                the browser might get the first page correctly, but will be unable to get the content with the absolute URL, unless the URL has the same scheme
+                                as the principal page.
+                            </p>
+                        </li>
+                        <li class="" style="">
+                            <p class="" style="">
+                                URL's to web forms must also be relative, for the same reason.
+                            </p>
+                        </li>
+                        <li class="" style="">
+                            <p class="" style="">
+                                Any URL's sent to the XML HTTP Request Object directed to API's or resources hosted by the same application must also be relative,
+                                for the same reasons as above. The XHR Object supports relative URL's.
+                            </p>
+                        </li>
+                    </ul>
+                    <p class="" style="">
+                        If the above rules are met, which they should under normal conditions as well, typing in the xmpp:// URL in the browser (for instance when
+                        you're at the office) should display the application (hosted for example at home behind a firewall) in the same way as when you use http:// 
+                        (or https://) when you have access to the server (for instance when you're home), as long as friendship exists between the browser JID and 
+                        the server JID.
+                    </p>
+                </div>
+            </div>
+            <div class="indent">
+        <h3>4.3.2 <a name="sect-ID0ERNAE">Web Services</a></h3>
+                <p class="" style="">
+                    Many applications use a Service Oriented Architecture (SOA) and use web services to communicate between clients and servers. These web services
+                    are mostly HTTP over TCP based, even though there are bindings which are not based on this. The most common APIs today (REST) are however all 
+                    based on HTTP over TCP. Being HTTP over TCP requires the web server hosting the web services either to be public or directly accessible by the 
+                    client. But as the services move closer to end users (for instance a Thermostat publishing a REST API for control in your home), problems arise 
+                    when you try to access the web service outside of private network in which the API is available. As explained previously, the HTTP over XMPP solves this.
+                </p>
+                <div class="indent">
+          <h3>4.3.2.1 <a name="sect-ID0EZNAE">SOAP</a></h3>
+                    <p class="" style="">
+                        The following example shows a simple SOAP method call, taken from 
+                        <a href="http://www.w3schools.com/soap/soap_example.asp">http://www.w3schools.com/soap/soap_example.asp</a>:
+                    </p>
+                    <p class="caption"><a name="example-18"></a>Example 18. SOAP method call</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@example.com'
+       id='15'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='POST' resource='/InStock' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;www.example.com&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/soap+xml; charset=utf-8&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;soap:Envelope xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
+                                 soap:encodingStyle="http://www.w3.org/2001/12/soap-encoding"&gt;
+                      &lt;soap:Body xmlns:m="http://www.example.org/stock"&gt;
+                          &lt;m:GetStockPrice&gt;
+                              &lt;m:StockName&gt;IBM&lt;/m:StockName&gt;
+                          &lt;/m:GetStockPrice&gt;
+                      &lt;/soap:Body&gt;
+                  &lt;/soap:Envelope&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@example.com'
+       to='httpclient@clayster.com/browser'
+       id='15'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Content-Type'&gt;application/soap+xml; charset=utf-8&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;soap:Envelope xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
+                                 soap:encodingStyle="http://www.w3.org/2001/12/soap-encoding"&gt;
+                      &lt;soap:Body xmlns:m="http://www.example.org/stock"&gt;
+                          &lt;m:GetStockPriceResponse&gt;
+                              &lt;m:Price&gt;34.5&lt;/m:Price&gt;
+                          &lt;/m:GetStockPriceResponse&gt;
+                      &lt;/soap:Body&gt;
+                  &lt;/soap:Envelope&gt; 
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                    </pre>
+          </div>
+                    <p class="" style="">
+                        <span class="strong">Note:</span> Other components of SOAP, such as WSDL and disco-documents are just examples of content
+                        handled by simple <a href="#GET">GET</a> requests.
+                    </p>
+                </div>
+                <div class="indent">
+          <h3>4.3.2.2 <a name="sect-ID0ETOAE">REST</a></h3>
+                    <p class="" style="">
+                        This section shows an example of a REST method call. REST method calls are just simple <a href="#GET">GET</a>,
+                        <a href="#POST">POST</a>, <a href="#PUT">PUT</a> or <a href="#DELETE">DELETE</a> HTTP calls with
+                        dynamically generated content.
+                    </p>
+                    <p class="caption"><a name="example-19"></a>Example 19. REST</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='16'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='GET' resource='/api/multiplicationtable?m=5' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+          &lt;/headers&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='16'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 05 May 2013 15:01:53GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/xml&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;table&gt;
+                      &lt;value n='1' nTimesM='5'/&gt;
+                      &lt;value n='2' nTimesM='10'/&gt;
+                      &lt;value n='3' nTimesM='15'/&gt;
+                      &lt;value n='4' nTimesM='20'/&gt;
+                      &lt;value n='5' nTimesM='25'/&gt;
+                      &lt;value n='6' nTimesM='30'/&gt;
+                      &lt;value n='7' nTimesM='35'/&gt;
+                      &lt;value n='8' nTimesM='40'/&gt;
+                      &lt;value n='9' nTimesM='45'/&gt;
+                      &lt;value n='10' nTimesM='50'/&gt;
+                  &lt;/table&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                    </pre>
+          </div>
+                </div>
+            </div>
+            <div class="indent">
+        <h3>4.3.3 <a name="sect-ID0ENPAE">Semantic Web &amp; IoT</a></h3>
+                <p class="" style="">
+                    The Semantic Web was originally developed as a way to link data between servers on the Web, and understand it. However, with the advents
+                    of technologies such as <a href="http://www.w3.org/TR/sparql11-query/">SPARQL</a>, the Semantic Web has become a way to
+                    unify API's into a universal form of distributed API to all types of data possible. It also alows for a standardized way to perform
+                    grid computing, in the sense that queries can be federated and executed in a distributed fashion ("in the grid").
+                </p>
+                <p class="" style="">
+                    For these reasons, and others, semantic web technologies have been moving closer to Internet of Things, and also into the private spheres
+                    of its end users. Since the semantic web technologies are based on HTTP, they also suffer from the shortcomings of HTTP over TCP, when it
+                    comes to firewalls and user authentication and authorization. Allowing HTTP transport over XMPP greatly improves the reach of semantic
+                    technologies beyond "The Internet" while at the same time improving security and controllability of the information.
+                </p>
+                <p class="" style="">
+                    As the semantic web comes closed to Internet of Things and the world of XMPP, it can benefit from work done with relation to the Internet of 
+                    Things, such as <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0324.html">Internet of Things - Provisioning</a></span>  [<a href="#nt-ID0EHQAE">11</a>], which would give automatic control of who (or what) can communicate with whom (or what).
+                </p>
+                <div class="indent">
+          <h3>4.3.3.1 <a name="sect-ID0EOQAE">Turtle</a></h3>
+                    <p class="" style="">
+                        Turtle  [<a href="#nt-ID0EWQAE">12</a>], is a simple way to represent semantic data. The following example shows Turtle-encoded semantic data being returned
+                        to the client as a response to a request.
+                    </p>
+                    <p class="caption"><a name="example-20"></a>Example 20. Turtle</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='2'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 16:39:54GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;text/turtle&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+              &lt;header name='Connection'&gt;Close&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;@base &amp;lt;http://example.org/&amp;gt; .
+@prefix rdf: &amp;lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&amp;gt; .
+@prefix rdfs: &amp;lt;http://www.w3.org/2000/01/rdf-schema#&amp;gt; .
+@prefix foaf: &amp;lt;http://xmlns.com/foaf/0.1/&amp;gt; .
+@prefix rel: &amp;lt;http://www.perceive.net/schemas/relationship/&amp;gt; .
+
+&amp;lt;#green-goblin&amp;gt;
+    rel:enemyOf &amp;lt;#spiderman&amp;gt; ;
+    a foaf:Person ;    # in the context of the Marvel universe
+    foaf:name "Green Goblin" .
+
+&amp;lt;#spiderman&amp;gt;
+    rel:enemyOf &amp;lt;#green-goblin&amp;gt; ;
+    a foaf:Person ;
+    foaf:name "Spiderman", "Человек-паук"@ru .&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                    </pre>
+          </div>
+                    <p class="" style="">
+                        <span class="strong">Note:</span> The above example was taken from <a href="http://www.w3.org/TR/turtle/#sec-intro">http://www.w3.org/TR/turtle/#sec-intro</a>.
+                    </p>
+                </div>
+                <div class="indent">
+          <h3>4.3.3.2 <a name="sect-ID0ELRAE">RDF</a></h3>
+                    <p class="" style="">
+                        RDF  [<a href="#nt-ID0ETRAE">13</a>], is a another way to represent semantic data, better suited than Turtle for M2M communication. Related technologies,
+                        such as the micro format RDFa  [<a href="#nt-ID0EZRAE">14</a>] allows for embedding RDF into HTML pages or XML documents. The following example shows RDF-encoded semantic data being returned
+                        to the client as a response to a request.
+                    </p>
+                    <p class="caption"><a name="example-21"></a>Example 21. RDF</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='17'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 05 May 2013 16:02:23GMT-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/rdf+xml&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                           xmlns:contact="http://www.w3.org/2000/10/swap/pim/contact#"&gt;
+                      &lt;contact:Person rdf:about="http://www.w3.org/People/EM/contact#me"&gt;
+                          &lt;contact:fullName&gt;Eric Miller&lt;/contact:fullName&gt;
+                          &lt;contact:mailbox rdf:resource="mailto:em@w3.org"/&gt;
+                          &lt;contact:personalTitle&gt;Dr.&lt;/contact:personalTitle&gt; 
+                      &lt;/contact:Person&gt;
+                  &lt;/rdf:RDF&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                    </pre>
+          </div>
+                    <p class="" style="">
+                        <span class="strong">Note:</span> The above example was taken from 
+                        <a href="http://www.w3.org/TR/2004/REC-rdf-primer-20040210/#intro">http://www.w3.org/TR/2004/REC-rdf-primer-20040210/#intro</a>.
+                    </p>
+                </div>
+                <div class="indent">
+          <h3>4.3.3.3 <a name="sect-ID0EOSAE">SPARQL</a></h3>
+                    <p class="" style="">
+                        This section shows an example of a SPARQL query executed as a POST call.
+                    </p>
+                    <p class="caption"><a name="example-22"></a>Example 22. SPARQL</p>
+          <div class="indent">
+            <pre class="prettyprint">
+                        
+   &lt;iq type='get'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='4'&gt;
+      &lt;req xmlns='urn:xmpp:http' method='POST' resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf' version='1.1'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Host'&gt;clayster.com&lt;/header&gt;
+              &lt;header name='User-agent'&gt;Clayster HTTP/XMPP Client&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/sparql-query&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;text&gt;PREFIX foaf: &amp;lt;http://xmlns.com/foaf/0.1/&amp;gt;
+SELECT ?name ?mbox ?hpage
+WHERE  { ?x foaf:name  ?name .
+         OPTIONAL { ?x foaf:mbox ?mbox } .
+         OPTIONAL { ?x foaf:homepage ?hpage }
+       }
+&lt;/text&gt;
+          &lt;/data&gt;
+      &lt;/req&gt;
+   &lt;/iq&gt;
+   
+   &lt;iq type='result'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='4'&gt;
+      &lt;resp xmlns='urn:xmpp:http' version='1.1' statusCode='200' statusMessage='OK'&gt;
+          &lt;headers xmlns='http://jabber.org/protocol/shim'&gt;
+              &lt;header name='Date'&gt;Fri, 03 May 2013 17:09:34-4&lt;/header&gt;
+              &lt;header name='Server'&gt;Clayster&lt;/header&gt;
+              &lt;header name='Content-Type'&gt;application/sparql-results+xml&lt;/header&gt;
+              &lt;header name='Content-Length'&gt;...&lt;/header&gt;
+          &lt;/headers&gt;
+          &lt;data&gt;
+              &lt;xml&gt;
+                  &lt;sparql xmlns="http://www.w3.org/2005/sparql-results#"&gt;
+                      &lt;head&gt;
+                          &lt;variable name="name"/&gt;
+                          &lt;variable name="mbox"/&gt;
+                          &lt;variable name="hpage"/&gt;
+                      &lt;/head&gt;
+                      &lt;results&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Alice&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="hpage"&gt;
+                                  &lt;literal&gt;&amp;lt;http://work.example.org/alice/&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                          &lt;result&gt;
+                              &lt;binding name="name"&gt;
+                                  &lt;literal&gt;Bob&lt;/literal&gt;
+                              &lt;/binding&gt;
+                              &lt;binding name="mbox"&gt;
+                                  &lt;literal&gt;&amp;lt;mailto:bob@work.example&amp;gt;&lt;/literal&gt;
+                              &lt;/binding&gt;
+                          &lt;/result&gt;
+                      &lt;/results&gt;
+                  &lt;/sparql&gt;
+              &lt;/xml&gt;
+          &lt;/data&gt;
+      &lt;/resp&gt;
+   &lt;/iq&gt;
+                    </pre>
+          </div>
+                    <p class="" style="">
+                        <span class="strong">Note:</span> The above SPARQL example was taken from <a href="http://www.w3.org/TR/sparql11-query/#MultipleOptionals">http://www.w3.org/TR/sparql11-query/#MultipleOptionals</a>
+                        in combination with <a href="http://www.w3.org/TR/sparql11-protocol/#select-longpost">http://www.w3.org/TR/sparql11-protocol/#select-longpost</a>.
+                    </p>
+                </div>
+            </div>
+            <div class="indent">
+        <h3>4.3.4 <a name="sect-ID0EITAE">Streams</a></h3>
+                <p class="" style="">
+                    There are many types of streams and streaming protocols. Several of these are based on HTTP or variants simulating HTTP. Examples of such HTTP-based or
+                    pseudo-HTTP based streaming protocols can include  [<a href="#nt-ID0EQTAE">15</a>] used for multi-media streaming,
+                     [<a href="#nt-ID0EWTAE">16</a>] used for internet radio and
+                     [<a href="#nt-ID0E3TAE">17</a>] common format for web cameras.
+                </p>
+                <p class="" style="">
+                    Common for all streaming data, is that they are indefinite, but at the same time rate-limited depending on quality, etc. Because of this, the
+                    web server is requried to use the <a href="#streams">streamsBase64 encoding</a> or the <a href="#jingle">Jingle</a> encoding to
+                    transport the content to the client.
+                </p>
+            </div>
+        </div>
+    <h2>5.
+       <a name="support">Determining Support</a></h2>
+        <p class="" style="">If an entity supports the protocol specified herein, it MUST advertise that fact by returning a feature of "urn:xmpp:http" in response to <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0030.html">Service Discovery</a></span>  [<a href="#nt-ID0E6UAE">18</a>] information requests.</p>
+        <p class="caption"><a name="example-23"></a>Example 23. Service discovery information request</p>
+    <div class="indent">
+      <pre class="prettyprint">
+            
+&lt;iq type='get'
+    from='httpclient@clayster.com/browser'
+    to='httpserver@clayster.com'
+    id='disco1'&gt;
+  &lt;query xmlns='http://jabber.org/protocol/disco#info'/&gt;
+&lt;/iq&gt;
+        </pre>
+    </div>
+        <p class="caption"><a name="example-24"></a>Example 24. Service discovery information response</p>
+    <div class="indent">
+      <pre class="prettyprint">
+            
+&lt;iq type='result'
+    from='httpserver@clayster.com'
+    to='httpclient@clayster.com/browser'
+    id='disco1'&gt;
+  &lt;query xmlns='http://jabber.org/protocol/disco#info'&gt;
+    ...
+    &lt;feature var='urn:xmpp:http'/&gt;
+    ...
+  &lt;/query&gt;
+&lt;/iq&gt;
+        </pre>
+    </div>
+        <p class="" style="">
+            In order for an application to determine whether an entity supports this protocol, where possible it SHOULD use the dynamic, presence-based profile of service discovery defined
+            in <span class="ref" style=""><a href="http://xmpp.org/extensions/xep-0115.html">Entity Capabilities</a></span>  [<a href="#nt-ID0EWVAE">19</a>]. However, if an application has not received entity capabilities information from an entity, it SHOULD use explicit service discovery instead.
+        </p>
+    <h2>6.
+       <a name="impl">Implementation Notes</a></h2>
+        <div class="indent">
+      <h3>6.1 <a name="httpconnections">Connection handling</a></h3>
+            <p class="" style="">
+                HTTP over TCP includes headers for connection handling. The basic sequence for an HTTP request might be:
+            </p>
+            <ul class="" style="">
+                <li class="" style="">Client connects to server</li>
+                <li class="" style="">Clients sends request</li>
+                <li class="" style="">Client received response</li>
+                <li class="" style="">Client closes connection</li>
+            </ul>
+            <p class="" style="">
+                However, in the HTTP over XMPP case, there are no connections between the client and the server. Both clients and servers
+                have active connections to the XMPP Server, but these remain unchanged during the sequence of requests. Therefore, both
+                clients and servers should ignore any HTTP over TCP connection settings, since they have no meaning in the HTTP over XMPP
+                case. However, the corresponding headers should always be transported as is, to maintain the information.
+            </p>
+        </div>
+        <div class="indent">
+      <h3>6.2 <a name="headers">HTTP Headers</a></h3>
+            <p class="" style="">
+                HTTP Headers are serialized to and from XML using the XEP-0131 <a href="http://xmpp.org/extensions/xep-0131.html">Stanza Headers and Internet Metadata</a>.
+                However, this does not mean that the SHIM feature needs to be published by the client, as defined in §3 in 
+                <a href="http://xmpp.org/extensions/xep-0131.html#disco">XEP-0131</a>, since the headers will be embedded into the HTTP elements.
+                Also, if there is any conflicts in how to store header values, when it comes to data types, etc., the original format as used by the original
+                HTTP request must be used, and not the format defined in <a href="http://xmpp.org/extensions/xep-0131.html#headers">Header Definitions</a> or
+                <a href="http://xmpp.org/extensions/xep-0131.html#dates">A Note About date-Related Headers</a> in XEP-0131.
+            </p>
+            <p class="" style="">
+                The HTTP over XMPP tunnel is just a tunnel of HTTP over XMPP, it does not know the semantic meaning of headers used in the transport. It does not know
+                if additional headers added by the myriad of custom applications using HTTP are actually HTTP-compliant. It just acts as a transport, returning the 
+                sime kind of response (being deterministric) as if the original request was made through other means, for example over TCP. It does not add, remove or
+                change semantic meaning of keys and values, nor change the format of the corresponding values. Such changes will create uncountable problems very difficult
+                to detect and solve in a general case.
+            </p>
+            <p class="" style="">
+                This specification differs from XEP-0131 in that this specification the headers are consumed by web servers and web clients (The XMPP client here only
+                being a "dumb" gateway), while in XEP-0131 the headers are consumed by the XMPP clients themselves, knowing XML and XML formats.
+            </p>
+        </div>
+		<div class="indent">
+      <h3>6.3 <a name="sect-ID0ECYAE">Stanza Sizes</a></h3>
+			<p class="" style="">
+				Some XMPP Servers may limit stanza sizes for various reasons. While this may work well for certain applications, like
+				Instant Messaging and Chat, implementors of HTTP over XMPP need to know that some server have such stanza size
+				restrictions. Therefore, an implementation should include configurable size limits, so chunking can be used instead
+				of sending large stanzas. Another limit could be when streaming should be used instead of chunking. This later limit
+				should be applied in particular on audio and video content.
+			</p>
+			<p class="" style="">
+				The implementor should also consider to send large content in the form of files using file transfer, and large multi-media 
+				content using Jingle.
+			</p>
+		</div>
+		<div class="indent">
+      <h3>6.4 <a name="sect-ID0EPYAE">Bandwidth Limitations</a></h3>
+			<p class="" style="">
+				Some XMPP Servers may also have bandwidth resitrctions enforced. This to limit the possibility of Denial of Service attacks 
+				or similar flooding of messages. Implementors of the HTTP over XMPP extensions must know however, that the bandwidth
+				limitations for instant messaging and chat may be completely different from that of normal web applications. In chatting,
+				a 1000 bytes/s limit is in most cases sufficient, while the same limit for even a modest web applications will make the
+				application completely impossible to use.
+			</p>
+		</div>
+	<h2>7.
+       <a name="security">Security Considerations</a></h2>
+        <p class="" style="">
+            It's beyond the scope of this document to define how HTTP clients or HTTP servers handle rosters internally. The following
+            sections list suggestions on how these can be handled by different parties.
+        </p>
+        <div class="indent">
+      <h3>7.1 <a name="rosterclient">Roster handling in browsers</a></h3>
+            <p class="" style="">
+                Since browsers are operated by end users, any friendship request received from the outside should be either shown to the user
+                (if the browser also maintains an IM client), or automatically rejected.
+            </p>
+            <p class="" style="">
+                On the other hand, when the browser wants to access an URL using the xmpp scheme, an automatic friendship request to the
+                corresponding JID should be done, if not already in the roster. It is assumed thay by entering the URL, or using the URL
+                of an application already displayed, is the same as giving permission to add that JID as a friend to the roster of the
+                browser.
+            </p>
+        </div>
+        <div class="indent">
+      <h3>7.2 <a name="rosterserver">Roster handling in web servers</a></h3>
+            <p class="" style="">
+                A web server should have different security settings available. The following subsections list possible settings for different
+                scenarios. Note that these settings only reflect roster handling and cannot be set per resource. However, the server can 
+                maintain a set of JIDs with different settings and restrict access to parts of the conted hosted by the server per JID.
+            </p>
+            <div class="indent">
+        <h3>7.2.1 <a name="sect-ID0EWZAE">Public Server</a></h3>
+                <p class="" style="">
+                    A public server should accept requests from anybody (reachable from the current JID). All friendship requests should be
+                    automatically accepted.
+                </p>
+                <p class="" style="">
+                    To avoid bloating the roster, friendship requests could be automatically unsubscribed once the HTTP session has ended.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>7.2.2 <a name="sect-ID0ED1AE">Manual Server</a></h3>
+                <p class="" style="">
+                    All new friendship are shown (or queued) to an administrator for manual acception or rejection. Once accepted, the client
+                    can access the corresponding content. During the wait (which can be substantial), the client should display a message
+                    that the friendship request is sent and response is pending.
+                </p>
+                <p class="" style="">
+                    Automatic unsubscription of friendships should only be done on a much longer inactivity timeframe than the normal session
+                    timeout interval.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>7.2.3 <a name="sect-ID0EQ1AE">Private Server</a></h3>
+                <p class="" style="">
+                    All new friendship requests are automatically rejected. Only already accepted friendships are allowed to make HTTP requests
+                    to the server.
+                </p>
+            </div>
+            <div class="indent">
+        <h3>7.2.4 <a name="sect-ID0EZ1AE">Provisioned Server</a></h3>
+                <p class="" style="">
+                    All new friendship requests are delegated to a trusted third party, according to
+                    <a href="http://xmpp.org/extensions/xep-0324.html">XEP 0324: Internet of Things - Provisioning</a>. Friendship
+                    acceptance or rejection is then performed according to the response from the provisioning server(s).
+                </p>
+                <p class="" style="">
+                    Automatic friendship unsubscription can be made to avoid bloating the roster. However, the time interval for unsubscribing
+                    inactive users should be longer than the normal session timeout period, to avoid spamming any provisioning servers each
+                    time a client requests friendship.
+                </p>
+            </div>
+        </div>
+    <h2>8.
+       <a name="iana">IANA Considerations</a></h2>
+        <p class="" style="">
+            The XMPP URL scheme, as described <a href="#xmppscheme">above</a>, must be registered.
+        </p>
+    <h2>9.
+       <a name="registrar">XMPP Registrar Considerations</a></h2>
+        
+        <p class="" style="">REQUIRED.</p>
+    <h2>10.
+       <a name="schema">XML Schema</a></h2>
+        <p class="caption">
+    </p>
+    <div class="indent">
+      <pre class="prettyprint">
+            
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='urn:xmpp:http'
+    xmlns='urn:xmpp:http'
+    xmlns:shim='http://jabber.org/protocol/shim'
+    xmlns:sipub='http://jabber.org/protocol/sipub'
+    xmlns:jingle='urn:xmpp:jingle:1'
+    elementFormDefault='qualified'&gt;
+
+    &lt;xs:import namespace='http://jabber.org/protocol/shim'/&gt;
+    &lt;xs:import namespace='http://jabber.org/protocol/sipub'/&gt;
+    &lt;xs:import namespace='urn:xmpp:jingle:1'/&gt;
+ 
+    &lt;xs:element name='req'&gt;
+        &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+                &lt;xs:element ref='shim:headers' minOccurs='0' maxOccurs='1'/&gt;
+                &lt;xs:element name='data' type='Data' minOccurs='0' maxOccurs='1'/&gt;
+            &lt;/xs:sequence&gt;
+            &lt;xs:attribute name='method' type='Method' use='required'/&gt;
+            &lt;xs:attribute name='resource' type='xs:string' use='required'/&gt;
+            &lt;xs:attribute name='version' type='Version' use='required'/&gt;
+        &lt;/xs:complexType&gt;
+    &lt;/xs:element&gt;
+ 
+    &lt;xs:element name='resp'&gt;
+        &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+                &lt;xs:element ref='shim:headers' minOccurs='0' maxOccurs='1'/&gt;
+                &lt;xs:element name='data' type='Data' minOccurs='0' maxOccurs='1'/&gt;
+            &lt;/xs:sequence&gt;
+            &lt;xs:attribute name='version' type='Version' use='required'/&gt;
+            &lt;xs:attribute name='statusCode' type='xs:positiveInteger' use='required'/&gt;
+            &lt;xs:attribute name='statusMessage' type='xs:string' use='optional'/&gt;
+        &lt;/xs:complexType&gt;
+    &lt;/xs:element&gt;
+ 
+    &lt;xs:element name="chunk"&gt;
+        &lt;xs:complexType&gt;
+            &lt;xs:simpleContent&gt;
+                &lt;xs:extension base="xs:base64Binary"&gt;
+                    &lt;xs:attribute name="streamId" type="xs:string" use="required"/&gt;
+                    &lt;xs:attribute name="last" type="xs:boolean" use="optional" default="false"/&gt;
+                &lt;/xs:extension&gt;
+            &lt;/xs:simpleContent&gt;
+        &lt;/xs:complexType&gt;
+    &lt;/xs:element&gt;
+ 
+    &lt;xs:element name='close'&gt;
+        &lt;xs:complexType&gt;
+            &lt;xs:attribute name='streamId' type='xs:string' use='required'/&gt;
+        &lt;/xs:complexType&gt;
+    &lt;/xs:element&gt;
+ 
+    &lt;xs:complexType name='Data'&gt;
+        &lt;xs:choice minOccurs='1' maxOccurs='1'&gt;
+            &lt;xs:element name='text' type='xs:string'/&gt;
+            &lt;xs:element name='xml'&gt;
+                &lt;xs:complexType&gt;
+                    &lt;xs:sequence minOccurs='0' maxOccurs='1'&gt;
+                        &lt;xs:any processContents="lax"  namespace="##any"/&gt;
+                    &lt;/xs:sequence&gt;
+                &lt;/xs:complexType&gt;
+            &lt;/xs:element&gt;
+            &lt;xs:element name="base64" type="xs:base64Binary"/&gt;
+            &lt;xs:element name="chunkedBase64"&gt;
+                &lt;xs:complexType&gt;
+                    &lt;xs:attribute name="streamId" type="xs:string" use="required"/&gt;
+                &lt;/xs:complexType&gt;
+            &lt;/xs:element&gt;
+            &lt;xs:element ref='sipub:sipub'/&gt;
+            &lt;xs:element name="streamBase64"&gt;
+                &lt;xs:complexType&gt;
+                    &lt;xs:attribute name="streamId" type="xs:string" use="required"/&gt;
+                &lt;/xs:complexType&gt;
+            &lt;/xs:element&gt;
+            &lt;xs:element ref="jingle:jingle"/&gt;
+        &lt;/xs:choice&gt;
+    &lt;/xs:complexType&gt;
+ 
+    &lt;xs:simpleType name='Method'&gt;
+        &lt;xs:restriction base='xs:string'&gt;
+            &lt;xs:enumeration value='OPTIONS'/&gt;
+            &lt;xs:enumeration value='GET'/&gt;
+            &lt;xs:enumeration value='HEAD'/&gt;
+            &lt;xs:enumeration value='POST'/&gt;
+            &lt;xs:enumeration value='PUT'/&gt;
+            &lt;xs:enumeration value='DELETE'/&gt;
+            &lt;xs:enumeration value='TRACE'/&gt;
+            &lt;xs:enumeration value='PATCH'/&gt;
+        &lt;/xs:restriction&gt;
+    &lt;/xs:simpleType&gt;
+ 
+    &lt;xs:simpleType name='Version'&gt;
+        &lt;xs:restriction base='xs:string'&gt;
+            &lt;xs:pattern value='\d[.]\d'/&gt;
+        &lt;/xs:restriction&gt;
+    &lt;/xs:simpleType&gt;
+ 
+&lt;/xs:schema&gt;
+        </pre>
+    </div>
+    <h2>11.
+       <a name="ack">Acknowledgements</a></h2>
+		<p class="" style="">Thanks to Peter Saint-Andre for all valuable feedback.</p>
+	<hr><a name="appendices"></a><h2>Appendices</h2>
+    <hr><a name="appendix-docinfo"></a><h3>Appendix A: Document Information</h3>
+    <p class="indent">
+            Series: <a href="http://xmpp.org/extensions/">XEP</a><br>
+            Number: xxxx<br>
+            Publisher: <a href="/xsf/">XMPP Standards Foundation</a><br>
+            Status: 
+            <a href="http://xmpp.org/extensions/xep-0001.html#states-ProtoXEP">ProtoXEP</a><br>
+            Type:
+            <a href="http://xmpp.org/extensions/xep-0001.html#types-Standards Track">Standards Track</a><br>
+            Version: 0.0.3<br>
+            Last Updated: 2013-05-10<br>
+                Approving Body: <a href="http://xmpp.org/council/">XMPP Council</a><br>Dependencies: XMPP Core, XEP-0001, XEP-0030, XEP-0131, XEP-0137, XEP-0166<br>
+                Supersedes: None<br>
+                Superseded By: None<br>
+            Short Name: NOT_YET_ASSIGNED<br>
+            This document in other formats: 
+                <a class="standardsButton" href="http://xmpp.org/extensions/xep-xxxx.xml">XML</a> 
+                <a class="standardsButton" href="http://xmpp.org/extensions/xep-xxxx.pdf">PDF</a></p>
+    <hr><a name="appendix-authorinfo"></a><h3>Appendix B: Author Information</h3>
+    <div class="indent">
+      <h3>Peter Waher</h3>
+      <p class="indent">
+        Email:
+        <a href="mailto:peter.waher@clayster.com">peter.waher@clayster.com</a><br>
+        JabberID: 
+        <a href="xmpp:peter.waher@jabber.org">peter.waher@jabber.org</a><br>
+        URI: 
+        <a href="http://se.linkedin.com/pub/peter-waher/1a/71b/a29/">http://se.linkedin.com/pub/peter-waher/1a/71b/a29/</a><br></p>
+    </div>
+    <hr><a name="appendix-legal"></a><h3>Appendix C: Legal Notices</h3>
+    <div class="indent">
+      <h4>Copyright</h4>This XMPP Extension Protocol is copyright (c) 1999 - 2013 by the XMPP Standards Foundation (XSF).<h4>Permissions</h4>Permission is hereby granted, free of charge, to any person obtaining a copy of this specification (the "Specification"), to make use of the Specification without restriction, including without limitation the rights to implement the Specification in a software program, deploy the Specification in a network service, and copy, modify, merge, publish, translate, distribute, sublicense, or sell copies of the Specification, and to permit persons to whom the Specification is furnished to do so, subject to the condition that the foregoing copyright notice and this permission notice shall be included in all copies or substantial portions of the Specification. Unless separate permission is granted, modified works that are redistributed shall not contain misleading information regarding the authors, title, number, or publisher of the Specification, and shall not claim endorsement of the modified works by the authors, any organization or project to which the authors belong, or the XMPP Standards Foundation.<h4>Disclaimer of Warranty</h4><span style="font-weight: bold">## NOTE WELL: This Specification is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. In no event shall the XMPP Standards Foundation or the authors of this Specification be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the Specification or the implementation, deployment, or other use of the Specification. ##</span><h4>Limitation of Liability</h4>In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall the XMPP Standards Foundation or any author of this Specification be liable for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising out of the use or inability to use the Specification (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if the XMPP Standards Foundation or such author has been advised of the possibility of such damages.<h4>IPR Conformance</h4>
+                This XMPP Extension Protocol has been contributed in full conformance with the XSF's Intellectual Property Rights Policy (a copy of which may be found at &lt;<a href="http://www.xmpp.org/extensions/ipr-policy.shtml">http://www.xmpp.org/extensions/ipr-policy.shtml</a>&gt; or obtained by writing to XSF, P.O. Box 1641, Denver, CO 80201 USA).
+            </div>
+    <hr><a name="appendix-xmpp"></a><h3>Appendix D: Relation to XMPP</h3>
+    <p class="indent">The Extensible Messaging and Presence Protocol (XMPP) is defined in the XMPP Core (RFC 6120) and XMPP IM (RFC 6121) specifications contributed by the XMPP Standards Foundation to the Internet Standards Process, which is managed by the Internet Engineering Task Force in accordance with RFC 2026. Any protocol defined in this document has been developed outside the Internet Standards Process and is to be understood as an extension to XMPP rather than as an evolution, development, or modification of XMPP itself.</p>
+    <hr><a name="appendix-discuss"></a><h3>Appendix E: Discussion Venue</h3>
+    <p class="indent">The primary venue for discussion of XMPP Extension Protocols is the &lt;<a href="http://mail.jabber.org/mailman/listinfo/standards">standards@xmpp.org</a>&gt; discussion list.</p>
+    <p class="indent">Discussion on other xmpp.org discussion lists might also be appropriate; see &lt;<a href="http://xmpp.org/about/discuss.shtml">http://xmpp.org/about/discuss.shtml</a>&gt; for a complete list.</p>
+    <p class="indent">Errata can be sent to &lt;<a href="mailto:editor@xmpp.org">editor@xmpp.org</a>&gt;.</p>
+    <hr><a name="appendix-conformance"></a><h3>Appendix F: Requirements Conformance</h3>
+    <p class="indent">The following requirements keywords as used in this document are to be interpreted as described in <a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a>: "MUST", "SHALL", "REQUIRED"; "MUST NOT", "SHALL NOT"; "SHOULD", "RECOMMENDED"; "SHOULD NOT", "NOT RECOMMENDED"; "MAY", "OPTIONAL".</p>
+    <hr><a name="appendix-notes"></a><h3>Appendix G: Notes</h3>
+    <div class="indent">
+      <p><a name="nt-ID0EJG">1</a>. XEP-0070: Verifying HTTP Requests via XMPP &lt;<a href="http://xmpp.org/extensions/xep-0070.html">http://xmpp.org/extensions/xep-0070.html</a>&gt;.</p>
+      <p><a name="nt-ID0E1G">2</a>. XEP-0072: SOAP over XMPP &lt;<a href="http://xmpp.org/extensions/xep-0072.html">http://xmpp.org/extensions/xep-0072.html</a>&gt;.</p>
+      <p><a name="nt-ID0ELH">3</a>. XEP-0124: Bidirectional-streams Over Synchronous HTTP &lt;<a href="http://xmpp.org/extensions/xep-0124.html">http://xmpp.org/extensions/xep-0124.html</a>&gt;.</p>
+      <p><a name="nt-ID0E3H">4</a>. XEP-0131: Stanza Headers and Internet Metadata &lt;<a href="http://xmpp.org/extensions/xep-0131.html">http://xmpp.org/extensions/xep-0131.html</a>&gt;.</p>
+      <p><a name="nt-ID0EOAAC">5</a>. XEP-0147: XMPP URI Query Components &lt;<a href="http://xmpp.org/extensions/xep-0147.html">http://xmpp.org/extensions/xep-0147.html</a>&gt;.</p>
+      <p><a name="nt-ID0EQBAC">6</a>. 
+                        RFC 2616: Hypertext Transfer Protocol -- HTTP/1.1 &lt;<a href="http://tools.ietf.org/html/rfc2616">http://tools.ietf.org/html/rfc2616</a>&gt;
+                    </p>
+      <p><a name="nt-ID0EWBAC">7</a>. 
+                        RFC 5789: PATCH Method for HTTP &lt;<a href="http://tools.ietf.org/html/rfc5789">http://tools.ietf.org/html/rfc5789</a>&gt;
+                    </p>
+      <p><a name="nt-ID0EUGAC">8</a>. XEP-0322: Efficient XML Interchange (EXI) Format &lt;<a href="http://xmpp.org/extensions/xep-0322.html">http://xmpp.org/extensions/xep-0322.html</a>&gt;.</p>
+      <p><a name="nt-ID0EIIAC">9</a>. XEP-0137: Publishing Stream Initiation Requests &lt;<a href="http://xmpp.org/extensions/xep-0137.html">http://xmpp.org/extensions/xep-0137.html</a>&gt;.</p>
+      <p><a name="nt-ID0EQJAC">10</a>. XEP-0166: Jingle &lt;<a href="http://xmpp.org/extensions/xep-0166.html">http://xmpp.org/extensions/xep-0166.html</a>&gt;.</p>
+      <p><a name="nt-ID0EHQAE">11</a>. XEP-0324: Internet of Things - Provisioning &lt;<a href="http://xmpp.org/extensions/xep-0324.html">http://xmpp.org/extensions/xep-0324.html</a>&gt;.</p>
+      <p><a name="nt-ID0EWQAE">12</a>. 
+                            Turtle: Terse RDF Triple Language &lt;<a href="http://www.w3.org/TR/turtle/">http://www.w3.org/TR/turtle/</a>&gt;
+                        </p>
+      <p><a name="nt-ID0ETRAE">13</a>. 
+                            RDF: Resource Description Framework &lt;<a href="http://www.w3.org/RDF/">http://www.w3.org/RDF/</a>&gt;
+                        </p>
+      <p><a name="nt-ID0EZRAE">14</a>. 
+                            RDFa: RDF through attributes &lt;<a href="http://www.w3.org/TR/rdfa-syntax/">http://www.w3.org/TR/rdfa-syntax/</a>&gt;
+                        </p>
+      <p><a name="nt-ID0EQTAE">15</a>. 
+                        HLS: HTTP Live Streaming &lt;<a href="http://en.wikipedia.org/wiki/HTTP_Live_Streaming">http://en.wikipedia.org/wiki/HTTP_Live_Streaming</a>&gt;
+                    </p>
+      <p><a name="nt-ID0EWTAE">16</a>. 
+                        SHOUTcast &lt;<a href="http://en.wikipedia.org/wiki/SHOUTcast">http://en.wikipedia.org/wiki/SHOUTcast</a>&gt;
+                    </p>
+      <p><a name="nt-ID0E3TAE">17</a>. 
+                        Motion JPeg &lt;<a href="http://en.wikipedia.org/wiki/Motion_JPEG">http://en.wikipedia.org/wiki/Motion_JPEG</a>&gt;
+                    </p>
+      <p><a name="nt-ID0E6UAE">18</a>. XEP-0030: Service Discovery &lt;<a href="http://xmpp.org/extensions/xep-0030.html">http://xmpp.org/extensions/xep-0030.html</a>&gt;.</p>
+      <p><a name="nt-ID0EWVAE">19</a>. XEP-0115: Entity Capabilities &lt;<a href="http://xmpp.org/extensions/xep-0115.html">http://xmpp.org/extensions/xep-0115.html</a>&gt;.</p>
+    </div>
+    <hr><a name="appendix-revs"></a><h3>Appendix H: Revision History</h3>
+    <p>Note: Older versions of this specification might be available at <a href="http://xmpp.org/extensions/attic/">http://xmpp.org/extensions/attic/</a></p>
+    <div class="indent">
+      <h4>Version 0.0.3 (2013-05-10)</h4>
+      <div class="indent">
+				<p class="" style="">Added more information about chunking.</p>
+				<p class="" style="">Added implementation notes regarding bandwidth and stanza size limitations in XMPP Servers.</p>
+			 (pw)
+    </div>
+      <h4>Version 0.0.2 (2013-05-08)</h4>
+      <div class="indent">
+                <p class="" style="">Added support for XEP-0131, Stanza Headers and Internet Metadata.</p>
+             (pw)
+    </div>
+      <h4>Version 0.0.1 (2013-05-05)</h4>
+      <div class="indent">
+                <p class="" style="">First draft.</p>
+             (pw)
+    </div>
+    </div>
+    <hr>
+    <p>END</p>
+  </body>
+</html>
