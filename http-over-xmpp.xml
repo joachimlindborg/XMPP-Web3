@@ -55,6 +55,23 @@ TODO: Inform:
             <uri>http://se.linkedin.com/pub/peter-waher/1a/71b/a29/</uri>
         </author>
 		<revision>
+			<version>0.0.5</version>
+			<date>2013-05-22</date>
+			<initials>pw</initials>
+			<remark>
+				<p>Changed IQ stanza type from 'get' to 'set' for all HTTP methods.</p>
+			</remark>
+		</revision>
+		<revision>
+			<version>0.0.4</version>
+			<date>2013-05-14</date>
+			<initials>pw</initials>
+			<remark>
+				<p>Updated format of encoding table, and made it into a definition list.</p>
+				<p>Language corrections.</p>
+			</remark>
+		</revision>
+		<revision>
 			<version>0.0.3</version>
 			<date>2013-05-10</date>
 			<initials>pw</initials>
@@ -82,16 +99,16 @@ TODO: Inform:
     </header>
     <section1 topic='Introduction' anchor='intro'>
         <p>
-            Many documents have been written about how to transport XMPP datagrams using HTTP. The motivation behind such solutions has often been to be able to use XMPP in
+            Many documents have been written on how to transport XMPP datagrams using HTTP. The motivation behind such solutions has often been to be able to use XMPP in
             scripting languages such as Java Script running in web browsers.
         </p>
         <p>
-            But very little has been written up to this point about the reverse: How to transport HTTP methods and HTTP responses over an XMPP-based peer-to-peer network.
-            Here, the motivation is as follows: There are multitudes of applications and APIs written that are based on HTTP over TCP as the basic communication transport protocol.
-            As these are moving closer and closer to the users, problems arise when the users want to protect their data and services using firewalls. Even though there are methods
-            today to open up firewalls manually or automatically permit communication with such devices and applications, you still open up the application for everybody. This
-            rises the need for more advanced security measures which is sometimes difficult to implement using HTTP.
-        </p>
+			But up to this point very little has been written about the reverse: How to transport HTTP methods and HTTP responses over an XMPP-based peer-to-peer network.
+			Here, the motivation is as follows: There are multitudes of applications and APIs written that are based on HTTP over TCP as the basic communication transport protocol.
+			As these are moving closer and closer to the users, problems arise when the users want to protect their data and services using firewalls. Even though there are methods
+			today to open up firewalls manually or automatically permit communication with such devices and applications, you still open up the application for everybody. This
+			rises the need for more advanced security measures which is sometimes difficult to implement using HTTP.
+		</p>
         <p>
             The XMPP protocol however does not have the same problems as HTTP in these regards. It's a peer-to-peer protocol naturally allowing communication with applications
             and devices behind firewalls. It also includes advanced user authentication and authorization which makes it easier to make sure unauthorized access to private
@@ -99,7 +116,7 @@ TODO: Inform:
         </p>
         <p>
             Furthermore, with the advent of semantic web technologies and its use in web 3.0 and Internet of Things applications, such applications move even more rapidly into
-            the privte spheres of the users, where security and privacy is of paramount importance, the need to use more secure transport protocols than HTTP over TCP is necessary.
+            the private spheres of the users, where security and privacy is of paramount importance, it is necessary to use more secure transport protocols than HTTP over TCP.
         </p>
         <p>
             There are many different types of HTTP-based communication that one would like to be able to transport over XMPP. A non-exhaustive list can include:
@@ -128,11 +145,11 @@ TODO: Inform:
                 Here HTTP Client authentication to resources on the HTTP Server is made by a third party, an XMPP Server.
             </li>
             <li>
-                &xep0072;: This speification handles execution of SOAP-based web services specifically. This specification have some benefits regarding to Web Service calls over XMPP,
-                but is only one example of all types of HTTP-based communucation one would desire to transport over XMPP.
+                &xep0072;: This specification handles execution of SOAP-based web services specifically. This specification has some benefits regarding to Web Service calls over XMPP,
+                but is only one example of all types of HTTP-based communication one would desire to transport over XMPP.
             </li>
             <li>
-                &xep0124;: This specification handles XMPP-based communication over HTTP sessions (BOSH), allowing for instance, java script to communicate using XMPP using the
+                &xep0124;: This specification handles XMPP-based communication over HTTP sessions (BOSH), allowing for instance, XMPP communication in java script using the
                 XML HTTP Request object. This is in some way the reverse of what this document proposes to do.
             </li>
             <li>
@@ -148,7 +165,7 @@ TODO: Inform:
     <section1 topic='Requirements' anchor='reqs'>
         <p>
             This document presupposes the server already has a web server (HTTP Server) implementation, and that it hosts content through it, content which can be both
-            dynamic (i.e. generated) or static (for example files) in nature. Content, which it wants to
+            dynamic (i.e. generated) or static (e.g. files) in nature. Content, which it wants to
             publish to XMPP clients as well as HTTP clients. It also presupposes that the client is aware of HTTP semantics and MIME encoding.
         </p>
     </section1>
@@ -179,11 +196,11 @@ TODO: Inform:
             </di>
             <di>
                 <dt>HTTP Request</dt>
-                <dd>An HTTP Request consists of a Method, version information, headers and optional body.</dd>
+                <dd>An HTTP Request consists of a HTTP Method, version information, headers and optional body.</dd>
             </di>
             <di>
                 <dt>HTTP Resource</dt>
-                <dd>A resouce on an HTTP Server identified by a path. Each path begins with a separator character (/).</dd>
+                <dd>A resource on an HTTP Server identified by a path. Each path begins with a separator character (/).</dd>
             </di>
             <di>
                 <dt>HTTP Response</dt>
@@ -201,9 +218,8 @@ TODO: Inform:
     </section1>
     <section1 topic='Use Cases' anchor='usecases'>
         <p>
-            All HTTP communication is done usig the <strong>Request</strong>/<strong>Response</strong> paradigm. Each HTTP Request is made sending an <strong>iq</strong>-stanza
-            containing a <strong>req</strong> element to the server. Each <strong>iq</strong>-stanza sent is of type <strong>get</strong> (not to be confused by the HTTP Method
-            <strong>GET</strong>).
+            All HTTP communication is done using the <strong>Request</strong>/<strong>Response</strong> paradigm. Each HTTP Request is made sending an <strong>iq</strong>-stanza
+            containing a <strong>req</strong> element to the server. Each <strong>iq</strong>-stanza sent is of type <strong>set</strong>.
         </p>
         <p>
             When the server responds, it does so by sending an <strong>iq</strong>-stanza response (type <strong>result</strong>) back to the client containing a <strong>resp</strong>
@@ -212,64 +228,71 @@ TODO: Inform:
         </p>
         <p>
             Requests or responses containing data must also consider how this data should be encoded within the XML telegram. Normally in HTTP, content and headers are separated
-            by a blank line, and the transfer of the content is made in the same stream. Specific HTTP headers are used to define how the content is transfered and encoded within
-            the stream (Content-Type, Content-Length, Content-Encoding, Content-Transfer-Encoding). This approach is not possible if the response is to be inbedded in an XML telegram,
+            by a blank line, and the transfer of the content is made in the same stream. Specific HTTP headers are used to define how the content is transferred and encoded within
+            the stream (Content-Type, Content-Length, Content-Encoding, Content-Transfer-Encoding). This approach is not possible if the response is to be embedded in an XML telegram,
             since it can interfere with the encoding of the encompassing XML.
         </p>
         <p>
             To solve this, this document specifies additional data transfer mechanisms that are compatible with the XMPP protocol. The normal HTTP-based content transfer headers will
             still be transported, but do not affect the content encoding used in the XMPP transport. The following content encoding methods are available:
         </p>
-        <ul>
-            <li>
-                <p>
-                    <strong>text</strong>: Normal text content. The text is encoded as text within XML, using the same encoding used by the XML stream. XML escape characters (&lt;, &gt; and &amp;)
-                    are escaped using the normal &amp;lt;, &amp;gt; and &amp;amp; character escape sequences.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>xml</strong>: Xml content embedded in the XML telegram. Note however, that any processing instructions or XML version statements must be avoided, since it may cause
-                    the XML stream to become invalid XML. If this is a problem, normal <strong>text</strong> encoding can be used as an alternative. The advantage of <strong>xml</strong>
-                    instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjuncion with EXI compression &xep0322;. EXI compression has the ability to
-                    compress XML efficiently. Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33%
-                    size gain induced by the encoding is recaptured.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>base64</strong>: Base-64 encoded binary content. Can be used to easily embed binary content in the telegram.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>chunkedBase64</strong>: Chunked Base-64 encoded binary content. The content is not embedded in the telegram. Instead it is sent in chunks, using separate
-                    <strong>chunk</strong> messages to the client. Chunked transport can be used by the server when it doesn't know the size of the final result. Chunked transport is
-                    similar to the <strong>streamBase64</strong> encoding with the (loose) distinction that a stream is indefinite, while chunked transport conveys finitely sized content.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>sipub</strong>: The sender might deem the content to be too large for sending embedded in the XMPP telegram. To circumnavigate this, the sender publishes
-                    the content as a file using &xep0137; (Publishing Stream Initiation Requests), instead of embedding the content directly. This might be the case for instance, when
-                    a client requests a video resource, without using a ranged request.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>streamBase64</strong>: This option may be used to encode indefinite streams, like live audio or video streams (HLS, SHOUTcast, Motion JPeg web cams, etc). It works
-                    as <strong>chunkedBase64</strong> with the distinction that the content is indefinite. This option is not available in requests, only in responses.
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>jingle</strong>: For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
-                    required. Even though the <strong>streamBase64</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
-                    or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
-                    and streamed, the server can negotiate a different way to stream the content using &xep0166;.
-                </p>
-            </li>
-        </ul>
+		<dl>
+			<di>
+				<dt>text</dt>
+				<dd>
+					Normal text content. The text is encoded as text within XML, using the same encoding used by the XML stream. XML escape characters (&lt;, &gt; and &amp;)
+					are escaped using the normal &amp;lt;, &amp;gt; and &amp;amp; character escape sequences.
+				</dd>
+			</di>
+			<di>
+				<dt>xml</dt>
+				<dd>
+					Xml content embedded in the XML telegram. Note however, that any processing instructions or XML version statements must be avoided, since it may cause
+					the XML stream to become invalid XML. If this is a problem, normal <strong>text</strong> encoding can be used as an alternative. The advantage of <strong>xml</strong>
+					instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjunction with EXI compression &xep0322;. EXI compression has the ability to
+					compress XML efficiently. Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33%
+					size gain induced by the encoding is recaptured.
+				</dd>
+			</di>
+			<di>
+				<dt>base64</dt>
+				<dd>
+					Base-64 encoded binary content. Can be used to easily embed binary content in the telegram.
+				</dd>
+			</di>
+			<di>
+				<dt>chunkedBase64</dt>
+				<dd>
+					Chunked Base-64 encoded binary content. The content is not embedded in the telegram. Instead it is sent in chunks, using separate
+					<strong>chunk</strong> messages to the client. Chunked transport can be used by the server when it doesn't know the size of the final result. Chunked transport is
+					similar to the <strong>streamBase64</strong> encoding with the (loose) distinction that a stream is indefinite, while chunked transport conveys finitely sized content.
+				</dd>
+			</di>
+			<di>
+				<dt>sipub</dt>
+				<dd>
+					The sender might deem the content to be too large for sending embedded in the XMPP telegram. To circumnavigate this, the sender publishes
+					the content as a file using &xep0137; (Publishing Stream Initiation Requests), instead of embedding the content directly. This might be the case for instance, when
+					a client requests a video resource, without using a ranged request.
+				</dd>
+			</di>
+			<di>
+				<dt>streamBase64</dt>
+				<dd>
+					This option may be used to encode indefinite streams, like live audio or video streams (HLS, SHOUTcast, Motion JPeg web cams, etc). It works
+					as <strong>chunkedBase64</strong> with the distinction that the content is indefinite. This option is not available in requests, only in responses.
+				</dd>
+			</di>
+			<di>
+				<dt>jingle</dt>
+				<dd>
+					For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
+					required. Even though the <strong>streamBase64</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
+					or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
+					and streamed, the server can negotiate a different way to stream the content using &xep0166;.
+				</dd>
+			</di>
+		</dl>
         <p>
             <strong>Note:</strong> Content encoded using <strong>chunkedBase64</strong> or <strong>streamBase64</strong> encoding methods can be terminated, either by the receptor going
             off-line, or by sending a <strong>close</strong> command to the sender.
@@ -285,7 +308,7 @@ TODO: Inform:
                 </p>
                 <example caption='OPTIONS'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='1'>
@@ -316,7 +339,7 @@ TODO: Inform:
                 </p>
                 <example caption='GET'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='2'>
@@ -374,7 +397,7 @@ TODO: Inform:
                 </p>
                 <example caption='HEAD'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='3'>
@@ -406,7 +429,7 @@ TODO: Inform:
                 </p>
                 <example caption='POST'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='4'>
@@ -415,6 +438,7 @@ TODO: Inform:
               <header name='Host'>clayster.com</header>
               <header name='User-agent'>Clayster HTTP/XMPP Client</header>
               <header name='Content-Type'>application/sparql-query</header>
+              <header name='Content-Length'>...</header>
           </headers>
           <data>
               <text>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
@@ -486,7 +510,7 @@ WHERE  { ?x foaf:name  ?name .
                 </p>
                 <example caption='PUT'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='5'>
@@ -521,7 +545,7 @@ WHERE  { ?x foaf:name  ?name .
                 </p>
                 <example caption='DELETE'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='6'>
@@ -555,7 +579,7 @@ WHERE  { ?x foaf:name  ?name .
                 </p>
                 <example caption='TRACE'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='7'>
@@ -598,7 +622,7 @@ Host: clayster.com</text>
                 </p>
                 <example caption='PATCH'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='8'>
@@ -632,12 +656,12 @@ Host: clayster.com</text>
                 <strong>Note:</strong> The example is taken from <link url='http://tools.ietf.org/html/rfc5789#section-2.1'>§2.1 RFC 5789</link>.
             </p>
         </section2>
-        <section2 topic='Response formats'>
+        <section2 topic='Encoding formats'>
             <p>
-                In the following sub-sections, the different data encoding formats are discussed with corresponding examples to illustrate how they work.
+                In the following sub-sections, the different data encoding formats are discussed, each with corresponding examples to illustrate how they work.
                 The interesting part of these examples is the <strong>data</strong> element and its contents.
             </p>
-            <section3 topic='Text'>
+            <section3 topic='text'>
                 <p>
                     Text responses is a simple way to return text responses (i.e. any MIME Type starting with text/). Since the text is embedded into XML, the
                     characters &lt;, &gt; and &amp; need to be escaped to &amp;lt;, &amp;gt; and &amp;amp; respectively.
@@ -645,7 +669,7 @@ Host: clayster.com</text>
                 <p>
                     The following example shows how a TURTLE response, which is text-based, is returned using the <strong>text</strong> encoding:
                 </p>
-                <example caption='Text'>
+                <example caption='text'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -680,9 +704,9 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='XML'>
+            <section3 topic='xml'>
                 <p>
-                    XML is a conveniant way to return XML embedded in the XMPP response. This can be suitable for MIME Types of the form <strong>.*/(.*[+])?xml</strong>
+                    XML is a convenient way to return XML embedded in the XMPP response. This can be suitable for MIME Types of the form <strong>.*/(.*[+])?xml</strong>
                     (using regular expression to match them), like text/xml, application/soap+xml or application/sparql-results+xml. Care has to be taken however, since
                     not all XML constructs can be embedded as content to an XML element without invalidating it, like the xml version and encoding declaration
                     (&lt;?xml version="1.0"?&gt; as an example).
@@ -692,12 +716,12 @@ Host: clayster.com</text>
                     encode the XML escape characters &lt;, &gt; and &amp;, or use another encoding, like <strong>base64</strong>.
                 </p>
                 <p>
-                    The advantage of <strong>xml</strong> instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjuncion with 
+                    The advantage of <strong>xml</strong> instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjunction with 
                     <link url='http://xmpp.org/extensions/xep-0322.html'>EXI compression</link>. EXI compression has the ability to compress XML efficiently. 
                     Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33% size 
                     gain induced by the encoding is recaptured.
                 </p>
-                <example caption='POST'>
+                <example caption='xml'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -743,16 +767,16 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='Base-64 encoding'>
+            <section3 topic='base64'>
                 <p>
-                    Base-64 encoding is a simple way to encode content that is easilly embedded into XML. Apart from the advantage of being easy to encode, 
+                    Base-64 encoding is a simple way to encode content that is easily embedded into XML. Apart from the advantage of being easy to encode, 
                     it has the disadvantage to increase the size of the content by 33% (unless EXI compression is used at the same time), since it requires 
                     4 bytes to encode 3 bytes of data. Care has to be taken not to send too large items using this encoding.
                 </p>
                 <p>
                     The following example shows an image is returned using the <strong>base64</strong> encoding:
                 </p>
-                <example caption='Base-64 encoding'>
+                <example caption='base64'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -772,7 +796,7 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='Chunked Base-64 encoding'>
+            <section3 topic='chunkedBase64'>
                 <p>
                     In HTTP, Chunked Transfer Encoding is used when the sender does not know the size of the content being sent, and to avoid having its buffers
                     overflow, sends the content in chunks with a definite size.
@@ -787,7 +811,7 @@ Host: clayster.com</text>
                     predetermined. Chunks are naturally delimited and embedded in the XML stanza. The last chunk in a response must have the <strong>last</strong>
                     attribute set to true.
                 </p>
-                <example caption='Chunked Base-64 encoding'>
+                <example caption='chunkedBase64'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -820,7 +844,7 @@ Host: clayster.com</text>
                 </example>
                 <p>
                     <strong>Note:</strong> Chunked encoding assumes the content to be finite. If content is infinite (i.e. for instance live streaming),
-                    the <strong>streamBase64</strong> transfer encoding must be used instead. If the sender is unsure if the content is finit or inifinite,
+                    the <strong>streamBase64</strong> transfer encoding must be used instead. If the sender is unsure if the content is finite or infinite,
                     the <strong>streamBase64</strong> must be used.
                 </p>
 				<p>
@@ -832,7 +856,7 @@ Host: clayster.com</text>
 					can be found in <link url='http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1'>RDF2616 §3.6.1</link>.
 				</p>
             </section3>
-            <section3 topic='File'>
+            <section3 topic='sipub'>
                 <p>
                     Often content being sent can be represented by a file, virtual or real, especially if the content actually represents a file and is not
                     dynamically generated. In these instances, instead of embedding the contents in the response,
@@ -840,7 +864,7 @@ Host: clayster.com</text>
                     <link url='http://xmpp.org/extensions/xep-0137.html'>XEP 0137: Publishing Stream Initiation Requests</link>. This is done using the
                     <strong>sipub</strong> element.
                 </p>
-                <example caption='File'>
+                <example caption='sipub'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -869,7 +893,7 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='Streams' anchor='#streams'>
+            <section3 topic='streamBase64' anchor='#streams'>
                 <p>
                     Some web servers provide streaming content, i.e. content where packets are sent according to a timely fashion. Examples are video
                     and audio streams like HLS (HTTP Live Streams), SHOUTcast, ICEcast, Motion JPeg, etc. In all these examples, content is infinite,
@@ -878,7 +902,7 @@ Host: clayster.com</text>
                 </p>
                 <p>
                     Such content must use the <strong>streamBase64</strong> encoding scheme, if used. The <strong>streamBase64</strong> is similar to
-                    the <strong>chunkedBase64</strong> encoding, except it is imlicitly understood that the stream can be indefinite and needs an
+                    the <strong>chunkedBase64</strong> encoding, except it is implicitly understood that the stream can be indefinite and needs an
                     explicit way to close the stream. Closing the stream is done by sending a <strong>close</strong> command to the sender of the
                     stream. The <strong>close</strong> command can also be used to close a chunked stream, and senders of chunked data should
                     support terminating the output if a <strong>close</strong> command on the stream is received.
@@ -894,9 +918,9 @@ Host: clayster.com</text>
                     <strong>Note 3:</strong> The <strong>close</strong> command can be sent using a message or iq stanza. Use iq stanzas if a
                     response is desired. The response will be the same close command sent.
                 </p>
-                <example caption='Streamed Base-64 encoding'>
+                <example caption='streamBase64'>
                     <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='12'>
@@ -918,7 +942,7 @@ Host: clayster.com</text>
               <header name='Content-Type'>multipart/x-mixed-replace;boundary=__2347927492837489237492837</header>
           </headers>
           <data>
-              <chunkedBase64 streamId='Stream0002'/>
+              <streamBase64 streamId='Stream0002'/>
           </data>
       </resp>
    </iq>
@@ -930,7 +954,7 @@ Host: clayster.com</text>
    
    ...
    
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='13'>
@@ -945,14 +969,14 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='Jingle' anchor='jingle'>
+            <section3 topic='jingle' anchor='jingle'>
                 <p>
                     For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
                     required. Even though the <strong>streamBase64</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
                     or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
                     and streamed, the server can negotiate a different way to stream the content using <link url='http://xmpp.org/extensions/xep-0166.html'>XEP 0166: Jingle</link>.
                 </p>
-                <example caption='Jingle'>
+                <example caption='jingle'>
                     <![CDATA[
    <iq type='result'
        from='httpserver@clayster.com'
@@ -1049,7 +1073,7 @@ Host: clayster.com</text>
                     </p>
                     <p>
                         By creating a new scheme for HTTP over XMPP transport, and implementing support for it in web browsers, XML HTTP request objects and web servers,
-                        Web Applications previously requiring web hosting on the Internet will be able to be hosted privatly behind firewalls instead, by simply switching
+                        Web Applications previously requiring web hosting on the Internet will be able to be hosted privately behind firewalls instead, by simply switching
                         from the http:// scheme to an xmpp:// scheme. All relative URL's within the application, including URL's sent to the XHR object (Ajax) will automatically
                         be directed to use the HTTP over XMPP transport instead.
                     </p>
@@ -1064,7 +1088,7 @@ Host: clayster.com</text>
                         Here, the JID to use in the URL, must not include a resource. Only user name, the @ character and the domain. The / separator between the JID
                         and the Path is actually part of the Part.
                     </p>
-                    <example caption='Examples of URLs with the xmpp scheme'>
+                    <example caption='Examples of URLs with the xmpp:// scheme'>
                         <![CDATA[
    xmpp://httpServer@clayster.com/index.html
    xmpp://httpServer@clayster.com/images/image1.png
@@ -1079,7 +1103,7 @@ Host: clayster.com</text>
                         multiple connection is canonical.
                     </p>
                     <p>
-                        When resolving an URL using the xmpp scheme, the browser needs to extract the JID of the server hosting the resource. If that JID
+                        When resolving an URL using the xmpp:// scheme, the browser needs to extract the JID of the server hosting the resource. If that JID
                         is already in the roster, the request can proceed as usual.
                     </p>
                     <p>
@@ -1115,7 +1139,7 @@ Host: clayster.com</text>
                     <ul>
                         <li>
                             <p>
-                                Only relative URL's are used within references (images, audio, video, links, objekts, etc.). If absolute URL's are used (including scheme), 
+                                Only relative URL's are used within references (images, audio, video, links, objects, etc.). If absolute URL's are used (including scheme), 
                                 the browser might get the first page correctly, but will be unable to get the content with the absolute URL, unless the URL has the same scheme
                                 as the principal page.
                             </p>
@@ -1127,13 +1151,13 @@ Host: clayster.com</text>
                         </li>
                         <li>
                             <p>
-                                Any URL's sent to the XML HTTP Request Object directed to API's or resources hosted by the same application must also be relative,
+                                Any URL's sent to the XML HTTP Request (XHR) Object directed to API's or resources hosted by the same application must also be relative,
                                 for the same reasons as above. The XHR Object supports relative URL's.
                             </p>
                         </li>
                     </ul>
                     <p>
-                        If the above rules are met, which they should under normal conditions as well, typing in the xmpp:// URL in the browser (for instance when
+                        If the above rules are met, which they should under normal conditions, typing in the xmpp:// URL in the browser (for instance when
                         you're at the office) should display the application (hosted for example at home behind a firewall) in the same way as when you use http:// 
                         (or https://) when you have access to the server (for instance when you're home), as long as friendship exists between the browser JID and 
                         the server JID.
@@ -1146,7 +1170,8 @@ Host: clayster.com</text>
                     are mostly HTTP over TCP based, even though there are bindings which are not based on this. The most common APIs today (REST) are however all 
                     based on HTTP over TCP. Being HTTP over TCP requires the web server hosting the web services either to be public or directly accessible by the 
                     client. But as the services move closer to end users (for instance a Thermostat publishing a REST API for control in your home), problems arise 
-                    when you try to access the web service outside of private network in which the API is available. As explained previously, the HTTP over XMPP solves this.
+                    when you try to access the web service outside of private network in which the API is available. As explained previously, the use of HTTP over XMPP 
+					solves this.
                 </p>
                 <section4 topic='SOAP'>
                     <p>
@@ -1155,7 +1180,7 @@ Host: clayster.com</text>
                     </p>
                     <example caption='SOAP method call'>
                         <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@example.com'
        id='15'>
@@ -1217,7 +1242,7 @@ Host: clayster.com</text>
                     </p>
                     <example caption='REST'>
                         <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='16'>
@@ -1264,7 +1289,7 @@ Host: clayster.com</text>
                 <p>
                     The Semantic Web was originally developed as a way to link data between servers on the Web, and understand it. However, with the advents
                     of technologies such as <link url='http://www.w3.org/TR/sparql11-query/'>SPARQL</link>, the Semantic Web has become a way to
-                    unify API's into a universal form of distributed API to all types of data possible. It also alows for a standardized way to perform
+                    unify API's into a universal form of distributed API to all types of data possible. It also allows for a standardized way to perform
                     grid computing, in the sense that queries can be federated and executed in a distributed fashion ("in the grid").
                 </p>
                 <p>
@@ -1274,7 +1299,7 @@ Host: clayster.com</text>
                     technologies beyond "The Internet" while at the same time improving security and controllability of the information.
                 </p>
                 <p>
-                    As the semantic web comes closed to Internet of Things and the world of XMPP, it can benefit from work done with relation to the Internet of 
+                    As the semantic web moves closer to Internet of Things and the world of XMPP, it can benefit from work done with relation to the Internet of 
                     Things, such as &xep0324;, which would give automatic control of who (or what) can communicate with whom (or what).
                 </p>
                 <section4 topic='Turtle'>
@@ -1371,15 +1396,17 @@ Host: clayster.com</text>
                     </p>
                     <example caption='SPARQL'>
                         <![CDATA[
-   <iq type='get'
+   <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='4'>
-      <req xmlns='urn:xmpp:http' method='POST' resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf' version='1.1'>
+      <req xmlns='urn:xmpp:http' method='POST' version='1.1'
+	       resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf'>
           <headers xmlns='http://jabber.org/protocol/shim'>
               <header name='Host'>clayster.com</header>
               <header name='User-agent'>Clayster HTTP/XMPP Client</header>
               <header name='Content-Type'>application/sparql-query</header>
+              <header name='Content-Length'>...</header>
           </headers>
           <data>
               <text>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
@@ -1442,7 +1469,7 @@ WHERE  { ?x foaf:name  ?name .
                     </p>
                 </section4>
             </section3>
-            <section3 topic='Streams'>
+            <section3 topic='Streaming'>
                 <p>
                     There are many types of streams and streaming protocols. Several of these are based on HTTP or variants simulating HTTP. Examples of such HTTP-based or
                     pseudo-HTTP based streaming protocols can include <note>
@@ -1457,7 +1484,7 @@ WHERE  { ?x foaf:name  ?name .
                 </p>
                 <p>
                     Common for all streaming data, is that they are indefinite, but at the same time rate-limited depending on quality, etc. Because of this, the
-                    web server is requried to use the <link url='#streams'>streamsBase64 encoding</link> or the <link url='#jingle'>Jingle</link> encoding to
+                    web server is required to use the <link url='#streams'>streamBase64</link> encoding or the <link url='#jingle'>jingle</link> encoding to
                     transport the content to the client.
                 </p>
             </section3>
@@ -1467,7 +1494,7 @@ WHERE  { ?x foaf:name  ?name .
         <p>If an entity supports the protocol specified herein, it MUST advertise that fact by returning a feature of "urn:xmpp:http" in response to &xep0030; information requests.</p>
         <example caption="Service discovery information request">
             <![CDATA[
-<iq type='get'
+<iq type='set'
     from='httpclient@clayster.com/browser'
     to='httpserver@clayster.com'
     id='disco1'>
@@ -1565,9 +1592,9 @@ WHERE  { ?x foaf:name  ?name .
                 (if the browser also maintains an IM client), or automatically rejected.
             </p>
             <p>
-                On the other hand, when the browser wants to access an URL using the xmpp scheme, an automatic friendship request to the
-                corresponding JID should be done, if not already in the roster. It is assumed thay by entering the URL, or using the URL
-                of an application already displayed, is the same as giving permission to add that JID as a friend to the roster of the
+                On the other hand, when the browser wants to access an URL using the xmpp:// scheme, an automatic friendship request to the
+                corresponding JID should be done, if not already in the roster. It is assumed that by entering the URL, or using the URL
+                of an application already displayed, this implies giving permission to add that JID as a friend to the roster of the
                 browser.
             </p>
         </section2>
@@ -1575,7 +1602,7 @@ WHERE  { ?x foaf:name  ?name .
             <p>
                 A web server should have different security settings available. The following subsections list possible settings for different
                 scenarios. Note that these settings only reflect roster handling and cannot be set per resource. However, the server can 
-                maintain a set of JIDs with different settings and restrict access to parts of the conted hosted by the server per JID.
+                maintain a set of JIDs with different settings and restrict access to parts of the content hosted by the server per JID.
             </p>
             <section3 topic='Public Server'>
                 <p>
@@ -1588,7 +1615,7 @@ WHERE  { ?x foaf:name  ?name .
             </section3>
             <section3 topic='Manual Server'>
                 <p>
-                    All new friendship are shown (or queued) to an administrator for manual acception or rejection. Once accepted, the client
+                    All new friendship are shown (or queued) to an administrator for manual acceptance or rejection. Once accepted, the client
                     can access the corresponding content. During the wait (which can be substantial), the client should display a message
                     that the friendship request is sent and response is pending.
                 </p>
@@ -1733,6 +1760,6 @@ WHERE  { ?x foaf:name  ?name .
         </code>
     </section1>
 	<section1 topic='Acknowledgements' anchor='ack'>
-		<p>Thanks to Peter Saint-Andre for all valuable feedback.</p>
+		<p>Thanks to Peter Saint-Andre, Karin Forsell and Matthew A. Miller for all valuable feedback.</p>
 	</section1>
 </xep>
