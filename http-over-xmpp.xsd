@@ -5,11 +5,13 @@
     xmlns='urn:xmpp:http'
 	xmlns:shim='http://jabber.org/protocol/shim'
 	xmlns:sipub='http://jabber.org/protocol/sipub'
+	xmlns:ibb='http://jabber.org/protocol/ibb'
 	xmlns:jingle='urn:xmpp:jingle:1'
     elementFormDefault='qualified'>
 
 	<xs:import namespace='http://jabber.org/protocol/shim'/>
 	<xs:import namespace='http://jabber.org/protocol/sipub'/>
+	<xs:import namespace='http://jabber.org/protocol/ibb'/>
 	<xs:import namespace='urn:xmpp:jingle:1'/>
  
 	<xs:element name='req'>
@@ -21,8 +23,19 @@
 			<xs:attribute name='method' type='Method' use='required'/>
 			<xs:attribute name='resource' type='xs:string' use='required'/>
 			<xs:attribute name='version' type='Version' use='required'/>
+			<xs:attribute name='maxChunkSize' type='MaxChunkSize' use='optional'/>
+			<xs:attribute name='sipub' type='xs:boolean' use='optional' default='true'/>
+			<xs:attribute name='ibb' type='xs:boolean' use='optional' default='true'/>
+			<xs:attribute name='jingle' type='xs:boolean' use='optional' default='true'/>
 		</xs:complexType>
 	</xs:element>
+ 
+	<xs:simpleType name='MaxChunkSize'>
+		<xs:restriction base='xs:int'>
+			<xs:minInclusive value='256'/>
+			<xs:maxInclusive value='65536'/>
+		</xs:restriction>
+	</xs:simpleType>
  
 	<xs:element name='resp'>
 		<xs:complexType>
@@ -35,6 +48,60 @@
 			<xs:attribute name='statusMessage' type='xs:string' use='optional'/>
 		</xs:complexType>
 	</xs:element>
+ 
+	<xs:complexType name='Data'>
+		<xs:choice minOccurs='1' maxOccurs='1'>
+			<xs:element name='text' type='xs:string'>
+				<xs:annotation>
+					<xs:documentation>Used for text responses that are not XML.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name='xml'>
+				<xs:annotation>
+					<xs:documentation>Specifically used for XML-formatted responses.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence minOccurs='0' maxOccurs='1'>
+						<xs:any processContents="lax"  namespace="##any"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="base64" type="xs:base64Binary">
+				<xs:annotation>
+					<xs:documentation>Short binary responses, base-64 encoded.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="chunkedBase64">
+				<xs:annotation>
+					<xs:documentation>Content is divided into chunks of binary base-64 encoded data.</xs:documentation>
+					<xs:documentation>Used if content is generated dynamically and/or content size is not known.</xs:documentation>
+					<xs:documentation>For streaming data the ibb:open or jingle:jingle transports must be used.</xs:documentation>
+					<xs:documentation>For static data, such as files, sipub:sipub should be used.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="streamId" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref='sipub:sipub'>
+				<xs:annotation>
+					<xs:documentation>Content available through file transfer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ibb">
+				<xs:annotation>
+					<xs:documentation>Content returned through an in-band bytestream.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="sid" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="jingle:jingle">
+				<xs:annotation>
+					<xs:documentation>Multi-media content returned through jingle.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
  
 	<xs:element name="chunk">
 		<xs:complexType>
@@ -52,32 +119,6 @@
 			<xs:attribute name='streamId' type='xs:string' use='required'/>
 		</xs:complexType>
 	</xs:element>
- 
-	<xs:complexType name='Data'>
-		<xs:choice minOccurs='1' maxOccurs='1'>
-			<xs:element name='text' type='xs:string'/>
-			<xs:element name='xml'>
-				<xs:complexType>
-					<xs:sequence minOccurs='0' maxOccurs='1'>
-						<xs:any processContents="lax"  namespace="##any"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="base64" type="xs:base64Binary"/>
-			<xs:element name="chunkedBase64">
-				<xs:complexType>
-					<xs:attribute name="streamId" type="xs:string" use="required"/>
-				</xs:complexType>
-			</xs:element>
-			<xs:element ref='sipub:sipub'/>
-			<xs:element name="streamBase64">
-				<xs:complexType>
-					<xs:attribute name="streamId" type="xs:string" use="required"/>
-				</xs:complexType>
-			</xs:element>
-			<xs:element ref="jingle:jingle"/>
-		</xs:choice>
-	</xs:complexType>
  
 	<xs:simpleType name='Method'>
 		<xs:restriction base='xs:string'>

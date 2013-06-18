@@ -40,6 +40,7 @@ TODO: Inform:
             <spec>XMPP Core</spec>
             <spec>XEP-0001</spec>
             <spec>XEP-0030</spec>
+            <spec>XEP-0047</spec>
             <spec>XEP-0131</spec>
             <spec>XEP-0137</spec>
             <spec>XEP-0166</spec>
@@ -54,33 +55,44 @@ TODO: Inform:
             <jid>peter.waher@jabber.org</jid>
             <uri>http://se.linkedin.com/pub/peter-waher/1a/71b/a29/</uri>
         </author>
-		<revision>
-			<version>0.0.5</version>
-			<date>2013-05-22</date>
-			<initials>pw</initials>
-			<remark>
-				<p>Changed IQ stanza type from 'get' to 'set' for all HTTP methods.</p>
-			</remark>
-		</revision>
-		<revision>
-			<version>0.0.4</version>
-			<date>2013-05-14</date>
-			<initials>pw</initials>
-			<remark>
-				<p>Updated format of encoding table, and made it into a definition list.</p>
-				<p>Language corrections.</p>
-			</remark>
-		</revision>
-		<revision>
-			<version>0.0.3</version>
-			<date>2013-05-10</date>
-			<initials>pw</initials>
-			<remark>
-				<p>Added more information about chunking.</p>
-				<p>Added implementation notes regarding bandwidth and stanza size limitations in XMPP Servers.</p>
-			</remark>
-		</revision>
-		<revision>
+        <revision>
+            <version>0.0.6</version>
+            <date>2013-06-17</date>
+            <initials>pw</initials>
+            <remark>
+                <p>Removed the streamBase64 transfer mechanism and replaced it with In-band bytestreams (IBB).</p>
+                <p>Created new examples, avoiding re-use of known public examples.</p>
+                <p>Extended the descriptions of the different transfer mechanisms.</p>
+                <p>Ability to state capabilities of the client in the request.</p>
+            </remark>
+        </revision>
+        <revision>
+            <version>0.0.5</version>
+            <date>2013-05-22</date>
+            <initials>pw</initials>
+            <remark>
+                <p>Changed IQ stanza type from 'get' to 'set' for all HTTP methods.</p>
+            </remark>
+        </revision>
+        <revision>
+            <version>0.0.4</version>
+            <date>2013-05-14</date>
+            <initials>pw</initials>
+            <remark>
+                <p>Updated format of encoding table, and made it into a definition list.</p>
+                <p>Language corrections.</p>
+            </remark>
+        </revision>
+        <revision>
+            <version>0.0.3</version>
+            <date>2013-05-10</date>
+            <initials>pw</initials>
+            <remark>
+                <p>Added more information about chunking.</p>
+                <p>Added implementation notes regarding bandwidth and stanza size limitations in XMPP Servers.</p>
+            </remark>
+        </revision>
+        <revision>
             <version>0.0.2</version>
             <date>2013-05-08</date>
             <initials>pw</initials>
@@ -103,12 +115,12 @@ TODO: Inform:
             scripting languages such as Java Script running in web browsers.
         </p>
         <p>
-			But up to this point very little has been written about the reverse: How to transport HTTP methods and HTTP responses over an XMPP-based peer-to-peer network.
-			Here, the motivation is as follows: There are multitudes of applications and APIs written that are based on HTTP over TCP as the basic communication transport protocol.
-			As these are moving closer and closer to the users, problems arise when the users want to protect their data and services using firewalls. Even though there are methods
-			today to open up firewalls manually or automatically permit communication with such devices and applications, you still open up the application for everybody. This
-			rises the need for more advanced security measures which is sometimes difficult to implement using HTTP.
-		</p>
+            But up to this point very little has been written about the reverse: How to transport HTTP methods and HTTP responses over an XMPP-based peer-to-peer network.
+            Here, the motivation is as follows: There are multitudes of applications and APIs written that are based on HTTP over TCP as the basic communication transport protocol.
+            As these are moving closer and closer to the users, problems arise when the users want to protect their data and services using firewalls. Even though there are methods
+            today to open up firewalls manually or automatically permit communication with such devices and applications, you still open up the application for everybody. This
+            rises the need for more advanced security measures which is sometimes difficult to implement using HTTP.
+        </p>
         <p>
             The XMPP protocol however does not have the same problems as HTTP in these regards. It's a peer-to-peer protocol naturally allowing communication with applications
             and devices behind firewalls. It also includes advanced user authentication and authorization which makes it easier to make sure unauthorized access to private
@@ -175,9 +187,9 @@ TODO: Inform:
             <di>
                 <dt>HTTP</dt>
                 <dd>
-                    Hyper Text Transfer Protocol. Version 1.1 of HTTP is described in <note>
+                    Hyper Text Transfer Protocol. Version 1.1 of HTTP is described in RFC 2616 <note>
                         RFC 2616: Hypertext Transfer Protocol -- HTTP/1.1 &lt;<link url='http://tools.ietf.org/html/rfc2616'>http://tools.ietf.org/html/rfc2616</link>&gt;
-                    </note>. The PATCH method is described in <note>
+                    </note>. The PATCH method is described in RFC 5789 <note>
                         RFC 5789: PATCH Method for HTTP &lt;<link url='http://tools.ietf.org/html/rfc5789'>http://tools.ietf.org/html/rfc5789</link>&gt;
                     </note>
                 </dd>
@@ -236,66 +248,117 @@ TODO: Inform:
             To solve this, this document specifies additional data transfer mechanisms that are compatible with the XMPP protocol. The normal HTTP-based content transfer headers will
             still be transported, but do not affect the content encoding used in the XMPP transport. The following content encoding methods are available:
         </p>
-		<dl>
-			<di>
-				<dt>text</dt>
-				<dd>
-					Normal text content. The text is encoded as text within XML, using the same encoding used by the XML stream. XML escape characters (&lt;, &gt; and &amp;)
-					are escaped using the normal &amp;lt;, &amp;gt; and &amp;amp; character escape sequences.
+        <dl>
+            <di>
+                <dt>text</dt>
+                <dd>
+                    <p>
+                        Normal text content. The text is encoded as text within XML, using the same encoding used by the XML stream. XML escape characters (&lt;, &gt; and &amp;)
+                        are escaped using the normal &amp;lt;, &amp;gt; and &amp;amp; character escape sequences.
+                    </p>
+                </dd>
+            </di>
+            <di>
+                <dt>xml</dt>
+                <dd>
+                    <p>
+                        Xml content embedded in the XML telegram. Note however, that any processing instructions or XML version statements must be avoided, since it may cause
+                        the XML stream to become invalid XML. If this is a problem, normal <strong>text</strong> encoding can be used as an alternative. The advantage of <strong>xml</strong>
+                        instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjunction with EXI compression &xep0322;. EXI compression has the ability to
+                        compress XML efficiently. Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33%
+                        size gain induced by the encoding is recaptured.
+                    </p>
+                </dd>
+            </di>
+            <di>
+                <dt>base64</dt>
+                <dd>
+                    <p>
+                        Base-64 encoded binary content. Can be used to easily embed binary content in the telegram.
+                    </p>
+                </dd>
+            </di>
+            <di>
+                <dt>chunkedBase64</dt>
+                <dd>
+                    <p>
+                        Chunked Base-64 encoded binary content. The content is not embedded in the telegram. Instead it is sent in chunks, using separate
+                        <strong>chunk</strong> messages to the client. Chunked transport can be used by the server when it doesn't know the size of the final result.
+                        Streaming content, i.e. content of infinite length, must use <strong>ibb</strong> or <strong>jingle</strong> transport types to transfer content.
+                        If the content consists of a file, <strong>sipub</strong> should be used.
+                    </p>
+                    <p>
+                        Chunked encoding is perfect for dynamic responses of moderate sizes, for instance for API method responses. The server does not know when the response 
+                        is begun to be generated what the final size will be, but it will be most probably "manageable". Using the chunked transfer mechanism enables the
+                        server to start sending the content, minimizing the need for buffers, and at the same time minimizing the number of messages that needs to be sent, 
+                        increasing throughput.
+                    </p>
+                    <p>
+                        The client can limit the maximum chunk size to be used by the server, using the <strong>maxChunkSize</strong> attribute in the request. The chunk
+						size can be set to a value between 256 and 65536. If not provided in the request, the server chooses an appropriate value. Note that chunks can
+						be sent containing a smaller amount of bytes than the maximum chunk size provided in the request.
+                    </p>
+                </dd>
+            </di>
+            <di>
+                <dt>sipub</dt>
+                <dd>
+                    <p>
+                        The sender might deem the content to be too large for sending embedded in the XMPP telegram. To circumnavigate this, the sender publishes
+                        the content as a file using &xep0137; (Publishing Stream Initiation Requests), instead of embedding the content directly. This might be the case for instance, when
+                        a client requests a video resource, without using a ranged request.
+                    </p>
+                    <p>
+                        This transfer mechanism is of course the logical choice, if the content is already stored in a file on the server, and the size of the file
+                        is sufficiently large to merit the overhead of sipub. Smaller files can simply be returned using the <strong>text</strong>, <strong>xml</strong>
+                        or <strong>base64</strong> mechanisms.
+                    </p>
+					<p>
+						The client can disable the use of <strong>sipub</strong> by the server, by including a <strong>sipub='false'</strong> attribute in the request. 
+						<strong>sipub</strong> is enabled by default. On constrained devices with limited support for different XEP's, this can be a way to avoid the 
+						use of technologies not supported by the client.
+					</p>
+                </dd>
+            </di>
+            <di>
+                <dt>ibb</dt>
+                <dd>
+                    <p>
+                        This option may be used to encode indefinite streams, like live audio or video streams (HLS, SHOUTcast, Motion JPeg web cams, etc).
+                        It uses &xep0047; to send the content over an in-band bytestream to the client. This option is not available in requests, only in responses.
+                    </p>
+                    <p>
+                        Streams must not use any of the above mechanisms. Only <strong>ibb</strong> and <strong>jingle</strong> mechanisms can be used. If the content
+                        represents multimedia <strong>jingle</strong> is preferrable, especially if different encodings are available.
+                    </p>
+					<p>
+						The client can disable the use of <strong>ibb</strong> by the server, by including a <strong>ibb='false'</strong> attribute in the request.
+						<strong>ibb</strong> is enabled by default. On constrained devices with limited support for different XEP's, this can be a way to avoid the
+						use of technologies not supported by the client.
+					</p>
 				</dd>
-			</di>
-			<di>
-				<dt>xml</dt>
-				<dd>
-					Xml content embedded in the XML telegram. Note however, that any processing instructions or XML version statements must be avoided, since it may cause
-					the XML stream to become invalid XML. If this is a problem, normal <strong>text</strong> encoding can be used as an alternative. The advantage of <strong>xml</strong>
-					instead of <strong>text</strong> or <strong>base64</strong> encodings is when used in conjunction with EXI compression &xep0322;. EXI compression has the ability to
-					compress XML efficiently. Text will not be compressed, unless response exists in internal string tables. Base-64 encoded data will be compressed so that the 33%
-					size gain induced by the encoding is recaptured.
+            </di>
+            <di>
+                <dt>jingle</dt>
+                <dd>
+                    <p>
+                        For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
+                        required. Even though the <strong>ibb</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
+                        or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
+                        and streamed, the server can negotiate a different way to stream the content using &xep0166;.
+                    </p>
+					<p>
+						The client can disable the use of <strong>ingle</strong> by the server, by including a <strong>jingle='false'</strong> attribute in the request.
+						<strong>jingle</strong> is enabled by default. On constrained devices with limited support for different XEP's, this can be a way to avoid the
+						use of technologies not supported by the client.
+					</p>
 				</dd>
-			</di>
-			<di>
-				<dt>base64</dt>
-				<dd>
-					Base-64 encoded binary content. Can be used to easily embed binary content in the telegram.
-				</dd>
-			</di>
-			<di>
-				<dt>chunkedBase64</dt>
-				<dd>
-					Chunked Base-64 encoded binary content. The content is not embedded in the telegram. Instead it is sent in chunks, using separate
-					<strong>chunk</strong> messages to the client. Chunked transport can be used by the server when it doesn't know the size of the final result. Chunked transport is
-					similar to the <strong>streamBase64</strong> encoding with the (loose) distinction that a stream is indefinite, while chunked transport conveys finitely sized content.
-				</dd>
-			</di>
-			<di>
-				<dt>sipub</dt>
-				<dd>
-					The sender might deem the content to be too large for sending embedded in the XMPP telegram. To circumnavigate this, the sender publishes
-					the content as a file using &xep0137; (Publishing Stream Initiation Requests), instead of embedding the content directly. This might be the case for instance, when
-					a client requests a video resource, without using a ranged request.
-				</dd>
-			</di>
-			<di>
-				<dt>streamBase64</dt>
-				<dd>
-					This option may be used to encode indefinite streams, like live audio or video streams (HLS, SHOUTcast, Motion JPeg web cams, etc). It works
-					as <strong>chunkedBase64</strong> with the distinction that the content is indefinite. This option is not available in requests, only in responses.
-				</dd>
-			</di>
-			<di>
-				<dt>jingle</dt>
-				<dd>
-					For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
-					required. Even though the <strong>streamBase64</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
-					or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
-					and streamed, the server can negotiate a different way to stream the content using &xep0166;.
-				</dd>
-			</di>
-		</dl>
+            </di>
+        </dl>
         <p>
-            <strong>Note:</strong> Content encoded using <strong>chunkedBase64</strong> or <strong>streamBase64</strong> encoding methods can be terminated, either by the receptor going
-            off-line, or by sending a <strong>close</strong> command to the sender.
+            <strong>Note:</strong> Content encoded using <strong>chunkedBase64</strong> encoding method can be terminated, either by the receptor going off-line, or by 
+            sending a <strong>close</strong> command to the sender. The transfer methods <strong>sipub</strong>, <strong>ibb</strong> and <strong>jingle</strong> have
+            their own mechanisms for aborting content transfer.
         </p>
         <section2 topic='HTTP Methods'>
             <p>
@@ -343,7 +406,7 @@ TODO: Inform:
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='2'>
-      <req xmlns='urn:xmpp:http' method='GET' resource='/rdf/ex1.turtle' version='1.1'>
+      <req xmlns='urn:xmpp:http' method='GET' resource='/rdf/xep' version='1.1'>
           <headers xmlns='http://jabber.org/protocol/shim'>
               <header name='Host'>clayster.com</header>
           </headers>
@@ -363,21 +426,12 @@ TODO: Inform:
               <header name='Connection'>Close</header>
           </headers>
           <data>
-              <text>@base &lt;http://example.org/&gt; .
-@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
-@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; .
-@prefix rel: &lt;http://www.perceive.net/schemas/relationship/&gt; .
+              <text>@prefix dc: &lt;http://purl.org/dc/elements/1.1/&gt;.
+@base &lt;http://clayster.com/&gt;.
 
-&lt;#green-goblin&gt;
-    rel:enemyOf &lt;#spiderman&gt; ;
-    a foaf:Person ;    # in the context of the Marvel universe
-    foaf:name "Green Goblin" .
-
-&lt;#spiderman&gt;
-    rel:enemyOf &lt;#green-goblin&gt; ;
-    a foaf:Person ;
-    foaf:name "Spiderman", "Человек-паук"@ru .</text>
+&lt;xep&gt; dc:title "HTTP over XMPP";
+      dc:creator &lt;PeterWaher&gt;;
+      dc:publisher &lt;XSF&gt;.</text>
           </data>
       </resp>
    </iq>]]>
@@ -386,9 +440,6 @@ TODO: Inform:
                     <strong>Note:</strong> The XMPP/HTTP bridge at the server only transmits headers literally as they are reported, as if it was normal HTTP over TCP
                     that was used. In the HTTP over XMPP case, connections are not handled in the same way, and so the "Connection: Close" header has no meaning in this
                     case. For more information about connection handling in the HTTP over XMPP case, see the section on <link url='#httpconnections'>Connection Handling</link>.
-                </p>
-                <p>
-                    <strong>Note 2:</strong> The above Turtle example was taken from <link url='http://www.w3.org/TR/turtle/#sec-intro'>http://www.w3.org/TR/turtle/#sec-intro</link>.
                 </p>
             </section3>
             <section3 topic='HEAD' anchor='HEAD'>
@@ -433,7 +484,7 @@ TODO: Inform:
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
        id='4'>
-      <req xmlns='urn:xmpp:http' method='POST' resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf' version='1.1'>
+      <req xmlns='urn:xmpp:http' method='POST' resource='/sparql/?default-graph-uri=http%3A%2F%2Fclayster.com%2Frdf/xep' version='1.1'>
           <headers xmlns='http://jabber.org/protocol/shim'>
               <header name='Host'>clayster.com</header>
               <header name='User-agent'>Clayster HTTP/XMPP Client</header>
@@ -441,13 +492,13 @@ TODO: Inform:
               <header name='Content-Length'>...</header>
           </headers>
           <data>
-              <text>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
-SELECT ?name ?mbox ?hpage
-WHERE  { ?x foaf:name  ?name .
-         OPTIONAL { ?x foaf:mbox ?mbox } .
-         OPTIONAL { ?x foaf:homepage ?hpage }
-       }
-</text>
+              <text>PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+BASE &lt;http://clayster.com/&gt;
+
+SELECT ?title ?creator ?publisher
+WHERE  { ?x dc:title ?title .
+         OPTIONAL { ?x dc:creator ?creator } .
+       }</text>
           </data>
       </req>
    </iq>
@@ -467,25 +518,16 @@ WHERE  { ?x foaf:name  ?name .
               <xml>
                   <sparql xmlns="http://www.w3.org/2005/sparql-results#">
                       <head>
-                          <variable name="name"/>
-                          <variable name="mbox"/>
-                          <variable name="hpage"/>
+                          <variable name="title"/>
+                          <variable name="creator"/>
                       </head>
                       <results>
                           <result>
-                              <binding name="name">
-                                  <literal>Alice</literal>
+                              <binding name="title">
+                                  <literal>HTTP over XMPP</literal>
                               </binding>
-                              <binding name="hpage">
-                                  <literal>&lt;http://work.example.org/alice/&gt;</literal>
-                              </binding>
-                          </result>
-                          <result>
-                              <binding name="name">
-                                  <literal>Bob</literal>
-                              </binding>
-                              <binding name="mbox">
-                                  <literal>&lt;mailto:bob@work.example&gt;</literal>
+                              <binding name="creator">
+                                  <uri>http://clayster.com/PeterWaher</uri>
                               </binding>
                           </result>
                       </results>
@@ -496,11 +538,7 @@ WHERE  { ?x foaf:name  ?name .
    </iq>]]>
                 </example>
                 <p>
-                    <strong>Note:</strong> The above SPARQL example was taken from <link url='http://www.w3.org/TR/sparql11-query/#MultipleOptionals'>http://www.w3.org/TR/sparql11-query/#MultipleOptionals</link>
-                    in combination with <link url='http://www.w3.org/TR/sparql11-protocol/#select-longpost'>http://www.w3.org/TR/sparql11-protocol/#select-longpost</link>.
-                </p>
-                <p>
-                    <strong>Note 2:</strong> If using <strong>xml</strong> encoding of data, care has to be taken to avoid including the version and encoding information 
+                    <strong>Note:</strong> If using <strong>xml</strong> encoding of data, care has to be taken to avoid including the version and encoding information 
                     (&lt;?xml version="1.0"?&gt;) at the top of the document, otherwise the resulting XML will be invalid.
                 </p>
             </section3>
@@ -652,9 +690,6 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <p>
-                <strong>Note:</strong> The example is taken from <link url='http://tools.ietf.org/html/rfc5789#section-2.1'>§2.1 RFC 5789</link>.
-            </p>
         </section2>
         <section2 topic='Encoding formats'>
             <p>
@@ -684,21 +719,12 @@ Host: clayster.com</text>
               <header name='Connection'>Close</header>
           </headers>
           <data>
-              <text>@base &lt;http://example.org/&gt; .
-@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
-@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; .
-@prefix rel: &lt;http://www.perceive.net/schemas/relationship/&gt; .
+              <text>@prefix dc: &lt;http://purl.org/dc/elements/1.1/&gt;.
+@base &lt;http://clayster.com/&gt;.
 
-&lt;#green-goblin&gt;
-    rel:enemyOf &lt;#spiderman&gt; ;
-    a foaf:Person ;    # in the context of the Marvel universe
-    foaf:name "Green Goblin" .
-
-&lt;#spiderman&gt;
-    rel:enemyOf &lt;#green-goblin&gt; ;
-    a foaf:Person ;
-    foaf:name "Spiderman", "Человек-паук"@ru .</text>
+&lt;xep&gt; dc:title "HTTP over XMPP";
+      dc:creator &lt;PeterWaher&gt;;
+      dc:publisher &lt;XSF&gt;.</text>
           </data>
       </resp>
    </iq>]]>
@@ -738,25 +764,16 @@ Host: clayster.com</text>
               <xml>
                   <sparql xmlns="http://www.w3.org/2005/sparql-results#">
                       <head>
-                          <variable name="name"/>
-                          <variable name="mbox"/>
-                          <variable name="hpage"/>
+                          <variable name="title"/>
+                          <variable name="creator"/>
                       </head>
                       <results>
                           <result>
-                              <binding name="name">
-                                  <literal>Alice</literal>
+                              <binding name="title">
+                                  <literal>HTTP over XMPP</literal>
                               </binding>
-                              <binding name="hpage">
-                                  <literal>&lt;http://work.example.org/alice/&gt;</literal>
-                              </binding>
-                          </result>
-                          <result>
-                              <binding name="name">
-                                  <literal>Bob</literal>
-                              </binding>
-                              <binding name="mbox">
-                                  <literal>&lt;mailto:bob@work.example&gt;</literal>
+                              <binding name="creator">
+                                  <uri>http://clayster.com/PeterWaher</uri>
                               </binding>
                           </result>
                       </results>
@@ -844,17 +861,17 @@ Host: clayster.com</text>
                 </example>
                 <p>
                     <strong>Note:</strong> Chunked encoding assumes the content to be finite. If content is infinite (i.e. for instance live streaming),
-                    the <strong>streamBase64</strong> transfer encoding must be used instead. If the sender is unsure if the content is finite or infinite,
-                    the <strong>streamBase64</strong> must be used.
+                    the <strong>ibb</strong> or <strong>jingle</strong> transfer encodings must be used instead. If the sender is unsure if the content is 
+                    finite or infinite, <strong>ibb</strong> or <strong>jingle</strong> must be used.
                 </p>
-				<p>
-					<strong>Note 2:</strong> If the web server sends chunked data to the client it uses the HTTP header <strong>Transfer-Encoding: chunked</strong>,
-					and then sends the data in chunks but with chunk sizes inserted so the receiving end can decode the incoming data. Note that this data will
-					be included in the data sent in the XMPP chunks defined by this document. In this case, data will be chunked twice: First by the web server,
-					and then by the HTTP over XMPP transport layer. When received by the client, it is first reassembled by the HTTP over XMPP layer on the client,
-					and then by the HTTP client who will read the original chunk size elements inserted into the content. More information about HTTP chunking,
-					can be found in <link url='http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1'>RDF2616 §3.6.1</link>.
-				</p>
+                <p>
+                    <strong>Note 2:</strong> If the web server sends chunked data to the client it uses the HTTP header <strong>Transfer-Encoding: chunked</strong>,
+                    and then sends the data in chunks but with chunk sizes inserted so the receiving end can decode the incoming data. Note that this data will
+                    be included in the data sent in the XMPP chunks defined by this document. In this case, data will be chunked twice: First by the web server,
+                    and then by the HTTP over XMPP transport layer. When received by the client, it is first reassembled by the HTTP over XMPP layer on the client,
+                    and then by the HTTP client who will read the original chunk size elements inserted into the content. More information about HTTP chunking,
+                    can be found in <link url='http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1'>RDF2616 §3.6.1</link>.
+                </p>
             </section3>
             <section3 topic='sipub'>
                 <p>
@@ -893,7 +910,7 @@ Host: clayster.com</text>
    </iq>]]>
                 </example>
             </section3>
-            <section3 topic='streamBase64' anchor='#streams'>
+            <section3 topic='ibb' anchor='#streams'>
                 <p>
                     Some web servers provide streaming content, i.e. content where packets are sent according to a timely fashion. Examples are video
                     and audio streams like HLS (HTTP Live Streams), SHOUTcast, ICEcast, Motion JPeg, etc. In all these examples, content is infinite,
@@ -901,24 +918,17 @@ Host: clayster.com</text>
                     example.
                 </p>
                 <p>
-                    Such content must use the <strong>streamBase64</strong> encoding scheme, if used. The <strong>streamBase64</strong> is similar to
-                    the <strong>chunkedBase64</strong> encoding, except it is implicitly understood that the stream can be indefinite and needs an
-                    explicit way to close the stream. Closing the stream is done by sending a <strong>close</strong> command to the sender of the
-                    stream. The <strong>close</strong> command can also be used to close a chunked stream, and senders of chunked data should
-                    support terminating the output if a <strong>close</strong> command on the stream is received.
+                    Such content must use the <strong>ibb</strong> transfer mechanism, if used (or the <strong>jingle</strong> transfer machanism). 
+                    The <strong>ibb</strong> transfer mechanism uses <link url='http://xmpp.org/extensions/xep-0047.html'>In-Band Bytestreams</link> 
+                    to transfer data from the server to the client. It starts by sending an a <strong>ibb</strong> element containing a <strong>sid</strong>
+                    attribute identifying the stream. Then the server sends an <strong>ibb:open</strong> IQ-stanza to the client according to
+                    <link url='http://xmpp.org/extensions/xep-0047.html'>XEP-0047</link>. The client can choose to reject, negotiate or acceopt the request
+                    whereby the transfer is begun. When the client is satisified and wants to close the stream, it does so, also according to
+                    <link url='http://xmpp.org/extensions/xep-0047.html'>XEP-0047</link>. The <strong>sid</strong> value returned in the HTTP response
+                    is the same <strong>sid</strong> value that is later used by the IBB messages that follow. In this way, the client can relate
+                    the HTTP request and response, with the corresponding data transferred separately.
                 </p>
-                <p>
-                    <strong>Note:</strong> All streams (or chunked responses) are automatically closed if one of the parties goes off-line.
-                </p>
-                <p>
-                    <strong>Note 2:</strong> A streamed response does not need to be indefinite. It can be finite. If it is finite, the last chunk
-                    must have the <strong>last</strong> attribute set to true.
-                </p>
-                <p>
-                    <strong>Note 3:</strong> The <strong>close</strong> command can be sent using a message or iq stanza. Use iq stanzas if a
-                    response is desired. The response will be the same close command sent.
-                </p>
-                <example caption='streamBase64'>
+                <example caption='ibb'>
                     <![CDATA[
    <iq type='set'
        from='httpclient@clayster.com/browser'
@@ -942,14 +952,29 @@ Host: clayster.com</text>
               <header name='Content-Type'>multipart/x-mixed-replace;boundary=__2347927492837489237492837</header>
           </headers>
           <data>
-              <streamBase64 streamId='Stream0002'/>
+              <ibb sid='Stream0002'/>
           </data>
       </resp>
    </iq>
    
+   <iq type='set'
+       from='httpserver@clayster.com'
+       to='httpclient@clayster.com/browser'
+       id='13'>
+      <open xmlns='http://jabber.org/protocol/ibb'
+            block-size='32768'
+            sid='Stream0002'
+            stanza='message'/>
+   </iq>
+   
+   <iq type='result'
+       from='httpclient@clayster.com/browser'
+       to='httpserver@clayster.com'
+       id='13'/>
+ 
    <message from='httpserver@clayster.com'
             to='httpclient@clayster.com/browser'>
-      <chunk xmlns='urn:xmpp:http' streamid='Stream0002'>...</chunk>
+      <data xmlns='http://jabber.org/protocol/ibb' sid='Stream0002' seq='0'>...</chunk>
    </message>
    
    ...
@@ -957,22 +982,20 @@ Host: clayster.com</text>
    <iq type='set'
        from='httpclient@clayster.com/browser'
        to='httpserver@clayster.com'
-       id='13'>
-      <close xmlns='urn:xmpp:http' streamId='Stream00002'/>
+       id='14'>
+      <close xmlns='http://jabber.org/protocol/ibb' sid='Stream0002'/>
    </iq>
    
    <iq type='result'
        from='httpserver@clayster.com'
        to='httpclient@clayster.com/browser'
-       id='13'>
-      <close xmlns='urn:xmpp:http' streamId='Stream00002'/>
-   </iq>]]>
+       id='14'/>]]>
                 </example>
             </section3>
             <section3 topic='jingle' anchor='jingle'>
                 <p>
                     For demanding multi-media streams alternative methods to transport streaming rather than embedded into the XMPP stream may be
-                    required. Even though the <strong>streamBase64</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
+                    required. Even though the <strong>ibb</strong> method may be sufficient to stream a low-resolution web cam in the home, or listen to a microphone
                     or a radio station, it is probably badly suited for high-resolution video streams with multiple video angles and audio channels. If such content is accessed
                     and streamed, the server can negotiate a different way to stream the content using <link url='http://xmpp.org/extensions/xep-0166.html'>XEP 0166: Jingle</link>.
                 </p>
@@ -1171,12 +1194,11 @@ Host: clayster.com</text>
                     based on HTTP over TCP. Being HTTP over TCP requires the web server hosting the web services either to be public or directly accessible by the 
                     client. But as the services move closer to end users (for instance a Thermostat publishing a REST API for control in your home), problems arise 
                     when you try to access the web service outside of private network in which the API is available. As explained previously, the use of HTTP over XMPP 
-					solves this.
+                    solves this.
                 </p>
                 <section4 topic='SOAP'>
                     <p>
-                        The following example shows a simple SOAP method call, taken from 
-                        <link url='http://www.w3schools.com/soap/soap_example.asp'>http://www.w3schools.com/soap/soap_example.asp</link>:
+                        The following example shows a simple SOAP method call:
                     </p>
                     <example caption='SOAP method call'>
                         <![CDATA[
@@ -1184,7 +1206,7 @@ Host: clayster.com</text>
        from='httpclient@clayster.com/browser'
        to='httpserver@example.com'
        id='15'>
-      <req xmlns='urn:xmpp:http' method='POST' resource='/InStock' version='1.1'>
+      <req xmlns='urn:xmpp:http' method='POST' resource='/Math' version='1.1'>
           <headers xmlns='http://jabber.org/protocol/shim'>
               <header name='Host'>www.example.com</header>
               <header name='Content-Type'>application/soap+xml; charset=utf-8</header>
@@ -1194,9 +1216,10 @@ Host: clayster.com</text>
               <xml>
                   <soap:Envelope xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
                                  soap:encodingStyle="http://www.w3.org/2001/12/soap-encoding">
-                      <soap:Body xmlns:m="http://www.example.org/stock">
-                          <m:GetStockPrice>
-                              <m:StockName>IBM</m:StockName>
+                      <soap:Body xmlns:m="http://www.clayster.com/math">
+                          <m:AddNumbers>
+                              <m:N1>10</m:N1>
+                              <m:N2>20</m:N2>
                           </m:GetStockPrice>
                       </soap:Body>
                   </soap:Envelope>
@@ -1218,10 +1241,10 @@ Host: clayster.com</text>
               <xml>
                   <soap:Envelope xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
                                  soap:encodingStyle="http://www.w3.org/2001/12/soap-encoding">
-                      <soap:Body xmlns:m="http://www.example.org/stock">
-                          <m:GetStockPriceResponse>
-                              <m:Price>34.5</m:Price>
-                          </m:GetStockPriceResponse>
+                      <soap:Body xmlns:m="http://www.clayster.com/math">
+                          <m:AddNumbersResponse>
+                              <m:Sum>30</m:Sum>
+                          </m:AddNumbersResponse>
                       </soap:Body>
                   </soap:Envelope> 
               </xml>
@@ -1324,28 +1347,16 @@ Host: clayster.com</text>
               <header name='Connection'>Close</header>
           </headers>
           <data>
-              <text>@base &lt;http://example.org/&gt; .
-@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
-@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; .
-@prefix rel: &lt;http://www.perceive.net/schemas/relationship/&gt; .
+              <text>@prefix dc: &lt;http://purl.org/dc/elements/1.1/&gt;.
+@base &lt;http://clayster.com/&gt;.
 
-&lt;#green-goblin&gt;
-    rel:enemyOf &lt;#spiderman&gt; ;
-    a foaf:Person ;    # in the context of the Marvel universe
-    foaf:name "Green Goblin" .
-
-&lt;#spiderman&gt;
-    rel:enemyOf &lt;#green-goblin&gt; ;
-    a foaf:Person ;
-    foaf:name "Spiderman", "Человек-паук"@ru .</text>
+&lt;xep&gt; dc:title "HTTP over XMPP";
+      dc:creator &lt;PeterWaher&gt;;
+      dc:publisher &lt;XSF&gt;.</text>
           </data>
       </resp>
    </iq>]]>
                     </example>
-                    <p>
-                        <strong>Note:</strong> The above example was taken from <link url='http://www.w3.org/TR/turtle/#sec-intro'>http://www.w3.org/TR/turtle/#sec-intro</link>.
-                    </p>
                 </section4>
                 <section4 topic='RDF'>
                     <p>
@@ -1372,23 +1383,19 @@ Host: clayster.com</text>
           </headers>
           <data>
               <xml>
-                  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                           xmlns:contact="http://www.w3.org/2000/10/swap/pim/contact#">
-                      <contact:Person rdf:about="http://www.w3.org/People/EM/contact#me">
-                          <contact:fullName>Eric Miller</contact:fullName>
-                          <contact:mailbox rdf:resource="mailto:em@w3.org"/>
-                          <contact:personalTitle>Dr.</contact:personalTitle> 
-                      </contact:Person>
+                  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" 
+                           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                      <rdf:Description rdf:about="http://clayster.com/xep">
+                          <dc:title>HTTP over XMPP</dc:title>
+                          <dc:creator rdf:resource="http://clayster.com/PeterWaher" />
+                          <dc:publisher rdf:resource="http://clayster.com/XSF" />
+                      </rdf:Description>
                   </rdf:RDF>
               </xml>
           </data>
       </resp>
    </iq>]]>
                     </example>
-                    <p>
-                        <strong>Note:</strong> The above example was taken from 
-                        <link url='http://www.w3.org/TR/2004/REC-rdf-primer-20040210/#intro'>http://www.w3.org/TR/2004/REC-rdf-primer-20040210/#intro</link>.
-                    </p>
                 </section4>
                 <section4 topic='SPARQL'>
                     <p>
@@ -1401,7 +1408,7 @@ Host: clayster.com</text>
        to='httpserver@clayster.com'
        id='4'>
       <req xmlns='urn:xmpp:http' method='POST' version='1.1'
-	       resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf'>
+           resource='/sparql/?default-graph-uri=http%3A%2F%2Fanother.example%2Fcalendar.rdf'>
           <headers xmlns='http://jabber.org/protocol/shim'>
               <header name='Host'>clayster.com</header>
               <header name='User-agent'>Clayster HTTP/XMPP Client</header>
@@ -1409,13 +1416,12 @@ Host: clayster.com</text>
               <header name='Content-Length'>...</header>
           </headers>
           <data>
-              <text>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
-SELECT ?name ?mbox ?hpage
-WHERE  { ?x foaf:name  ?name .
-         OPTIONAL { ?x foaf:mbox ?mbox } .
-         OPTIONAL { ?x foaf:homepage ?hpage }
-       }
-</text>
+              <text>@prefix dc: &lt;http://purl.org/dc/elements/1.1/&gt;.
+@base &lt;http://clayster.com/&gt;.
+
+&lt;xep&gt; dc:title "HTTP over XMPP";
+      dc:creator &lt;PeterWaher&gt;;
+      dc:publisher &lt;XSF&gt;.</text>
           </data>
       </req>
    </iq>
@@ -1435,25 +1441,16 @@ WHERE  { ?x foaf:name  ?name .
               <xml>
                   <sparql xmlns="http://www.w3.org/2005/sparql-results#">
                       <head>
-                          <variable name="name"/>
-                          <variable name="mbox"/>
-                          <variable name="hpage"/>
+                          <variable name="title"/>
+                          <variable name="creator"/>
                       </head>
                       <results>
                           <result>
-                              <binding name="name">
-                                  <literal>Alice</literal>
+                              <binding name="title">
+                                  <literal>HTTP over XMPP</literal>
                               </binding>
-                              <binding name="hpage">
-                                  <literal>&lt;http://work.example.org/alice/&gt;</literal>
-                              </binding>
-                          </result>
-                          <result>
-                              <binding name="name">
-                                  <literal>Bob</literal>
-                              </binding>
-                              <binding name="mbox">
-                                  <literal>&lt;mailto:bob@work.example&gt;</literal>
+                              <binding name="creator">
+                                  <uri>http://clayster.com/PeterWaher</uri>
                               </binding>
                           </result>
                       </results>
@@ -1463,28 +1460,24 @@ WHERE  { ?x foaf:name  ?name .
       </resp>
    </iq>]]>
                     </example>
-                    <p>
-                        <strong>Note:</strong> The above SPARQL example was taken from <link url='http://www.w3.org/TR/sparql11-query/#MultipleOptionals'>http://www.w3.org/TR/sparql11-query/#MultipleOptionals</link>
-                        in combination with <link url='http://www.w3.org/TR/sparql11-protocol/#select-longpost'>http://www.w3.org/TR/sparql11-protocol/#select-longpost</link>.
-                    </p>
                 </section4>
             </section3>
             <section3 topic='Streaming'>
                 <p>
                     There are many types of streams and streaming protocols. Several of these are based on HTTP or variants simulating HTTP. Examples of such HTTP-based or
-                    pseudo-HTTP based streaming protocols can include <note>
+                    pseudo-HTTP based streaming protocols can include HLS <note>
                         HLS: HTTP Live Streaming &lt;<link url='http://en.wikipedia.org/wiki/HTTP_Live_Streaming'>http://en.wikipedia.org/wiki/HTTP_Live_Streaming</link>&gt;
                     </note> used for multi-media streaming,
-                    <note>
+                    SHOUTcast <note>
                         SHOUTcast &lt;<link url='http://en.wikipedia.org/wiki/SHOUTcast'>http://en.wikipedia.org/wiki/SHOUTcast</link>&gt;
                     </note> used for internet radio and
-                    <note>
+                    Motion JPeg <note>
                         Motion JPeg &lt;<link url='http://en.wikipedia.org/wiki/Motion_JPEG'>http://en.wikipedia.org/wiki/Motion_JPEG</link>&gt;
                     </note> common format for web cameras.
                 </p>
                 <p>
                     Common for all streaming data, is that they are indefinite, but at the same time rate-limited depending on quality, etc. Because of this, the
-                    web server is required to use the <link url='#streams'>streamBase64</link> encoding or the <link url='#jingle'>jingle</link> encoding to
+                    web server is required to use the <link url='#streams'>ibb</link> encoding or the <link url='#jingle'>jingle</link> encoding to
                     transport the content to the client.
                 </p>
             </section3>
@@ -1558,29 +1551,29 @@ WHERE  { ?x foaf:name  ?name .
                 being a "dumb" gateway), while in XEP-0131 the headers are consumed by the XMPP clients themselves, knowing XML and XML formats.
             </p>
         </section2>
-		<section2 topic='Stanza Sizes'>
-			<p>
-				Some XMPP Servers may limit stanza sizes for various reasons. While this may work well for certain applications, like
-				Instant Messaging and Chat, implementors of HTTP over XMPP need to know that some server have such stanza size
-				restrictions. Therefore, an implementation should include configurable size limits, so chunking can be used instead
-				of sending large stanzas. Another limit could be when streaming should be used instead of chunking. This later limit
-				should be applied in particular on audio and video content.
-			</p>
-			<p>
-				The implementor should also consider to send large content in the form of files using file transfer, and large multi-media 
-				content using Jingle.
-			</p>
-		</section2>
-		<section2 topic='Bandwidth Limitations'>
-			<p>
-				Some XMPP Servers may also have bandwidth resitrctions enforced. This to limit the possibility of Denial of Service attacks 
-				or similar flooding of messages. Implementors of the HTTP over XMPP extensions must know however, that the bandwidth
-				limitations for instant messaging and chat may be completely different from that of normal web applications. In chatting,
-				a 1000 bytes/s limit is in most cases sufficient, while the same limit for even a modest web applications will make the
-				application completely impossible to use.
-			</p>
-		</section2>
-	</section1>
+        <section2 topic='Stanza Sizes'>
+            <p>
+                Some XMPP Servers may limit stanza sizes for various reasons. While this may work well for certain applications, like
+                Instant Messaging and Chat, implementors of HTTP over XMPP need to know that some server have such stanza size
+                restrictions. Therefore, an implementation should include configurable size limits, so chunking can be used instead
+                of sending large stanzas. Another limit could be when streaming should be used instead of chunking. This later limit
+                should be applied in particular on audio and video content.
+            </p>
+            <p>
+                The implementor should also consider to send large content in the form of files using file transfer, and large multi-media 
+                content using Jingle.
+            </p>
+        </section2>
+        <section2 topic='Bandwidth Limitations'>
+            <p>
+                Some XMPP Servers may also have bandwidth resitrctions enforced. This to limit the possibility of Denial of Service attacks 
+                or similar flooding of messages. Implementors of the HTTP over XMPP extensions must know however, that the bandwidth
+                limitations for instant messaging and chat may be completely different from that of normal web applications. In chatting,
+                a 1000 bytes/s limit is in most cases sufficient, while the same limit for even a modest web applications will make the
+                application completely impossible to use.
+            </p>
+        </section2>
+    </section1>
     <section1 topic='Security Considerations' anchor='security'>
         <p>
             It's beyond the scope of this document to define how HTTP clients or HTTP servers handle rosters internally. The following
@@ -1663,11 +1656,13 @@ WHERE  { ?x foaf:name  ?name .
     xmlns='urn:xmpp:http'
     xmlns:shim='http://jabber.org/protocol/shim'
     xmlns:sipub='http://jabber.org/protocol/sipub'
+    xmlns:ibb='http://jabber.org/protocol/ibb'
     xmlns:jingle='urn:xmpp:jingle:1'
     elementFormDefault='qualified'>
 
     <xs:import namespace='http://jabber.org/protocol/shim'/>
     <xs:import namespace='http://jabber.org/protocol/sipub'/>
+    <xs:import namespace='http://jabber.org/protocol/ibb'/>
     <xs:import namespace='urn:xmpp:jingle:1'/>
  
     <xs:element name='req'>
@@ -1679,8 +1674,19 @@ WHERE  { ?x foaf:name  ?name .
             <xs:attribute name='method' type='Method' use='required'/>
             <xs:attribute name='resource' type='xs:string' use='required'/>
             <xs:attribute name='version' type='Version' use='required'/>
+            <xs:attribute name='maxChunkSize' type='MaxChunkSize' use='optional'/>
+            <xs:attribute name='sipub' type='xs:boolean' use='optional' default='true'/>
+            <xs:attribute name='ibb' type='xs:boolean' use='optional' default='true'/>
+            <xs:attribute name='jingle' type='xs:boolean' use='optional' default='true'/>
         </xs:complexType>
     </xs:element>
+ 
+    <xs:simpleType name='MaxChunkSize'>
+        <xs:restriction base='xs:int'>
+            <xs:minInclusive value='256'/>
+            <xs:maxInclusive value='65536'/>
+        </xs:restriction>
+    </xs:simpleType>
  
     <xs:element name='resp'>
         <xs:complexType>
@@ -1693,6 +1699,60 @@ WHERE  { ?x foaf:name  ?name .
             <xs:attribute name='statusMessage' type='xs:string' use='optional'/>
         </xs:complexType>
     </xs:element>
+ 
+    <xs:complexType name='Data'>
+        <xs:choice minOccurs='1' maxOccurs='1'>
+            <xs:element name='text' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation>Used for text responses that are not XML.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name='xml'>
+                <xs:annotation>
+                    <xs:documentation>Specifically used for XML-formatted responses.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence minOccurs='0' maxOccurs='1'>
+                        <xs:any processContents="lax"  namespace="##any"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="base64" type="xs:base64Binary">
+                <xs:annotation>
+                    <xs:documentation>Short binary responses, base-64 encoded.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="chunkedBase64">
+                <xs:annotation>
+                    <xs:documentation>Content is divided into chunks of binary base-64 encoded data.</xs:documentation>
+                    <xs:documentation>Used if content is generated dynamically and/or content size is not known.</xs:documentation>
+                    <xs:documentation>For streaming data the ibb:open or jingle:jingle transports must be used.</xs:documentation>
+                    <xs:documentation>For static data, such as files, sipub:sipub should be used.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:attribute name="streamId" type="xs:string" use="required"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref='sipub:sipub'>
+                <xs:annotation>
+                    <xs:documentation>Content available through file transfer.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ibb">
+                <xs:annotation>
+                    <xs:documentation>Content returned through an in-band bytestream.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:attribute name="sid" type="xs:string" use="required"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="jingle:jingle">
+                <xs:annotation>
+                    <xs:documentation>Multi-media content returned through jingle.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
  
     <xs:element name="chunk">
         <xs:complexType>
@@ -1710,32 +1770,6 @@ WHERE  { ?x foaf:name  ?name .
             <xs:attribute name='streamId' type='xs:string' use='required'/>
         </xs:complexType>
     </xs:element>
- 
-    <xs:complexType name='Data'>
-        <xs:choice minOccurs='1' maxOccurs='1'>
-            <xs:element name='text' type='xs:string'/>
-            <xs:element name='xml'>
-                <xs:complexType>
-                    <xs:sequence minOccurs='0' maxOccurs='1'>
-                        <xs:any processContents="lax"  namespace="##any"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="base64" type="xs:base64Binary"/>
-            <xs:element name="chunkedBase64">
-                <xs:complexType>
-                    <xs:attribute name="streamId" type="xs:string" use="required"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element ref='sipub:sipub'/>
-            <xs:element name="streamBase64">
-                <xs:complexType>
-                    <xs:attribute name="streamId" type="xs:string" use="required"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element ref="jingle:jingle"/>
-        </xs:choice>
-    </xs:complexType>
  
     <xs:simpleType name='Method'>
         <xs:restriction base='xs:string'>
@@ -1759,7 +1793,7 @@ WHERE  { ?x foaf:name  ?name .
 </xs:schema>]]>
         </code>
     </section1>
-	<section1 topic='Acknowledgements' anchor='ack'>
-		<p>Thanks to Peter Saint-Andre, Karin Forsell and Matthew A. Miller for all valuable feedback.</p>
-	</section1>
+    <section1 topic='Acknowledgements' anchor='ack'>
+        <p>Thanks to Peter Saint-Andre, Karin Forsell and Matthew A. Miller for all valuable feedback.</p>
+    </section1>
 </xep>
