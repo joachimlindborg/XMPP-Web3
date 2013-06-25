@@ -34,16 +34,21 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 
 <xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>
 
-  <xsl:output doctype-public='-//W3C//DTD XHTML 1.0 Transitional//EN' doctype-system='http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd' method='html'/>
+  <xsl:output doctype-public='-//W3C//DTD XHTML 1.0 Transitional//EN' doctype-system='http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd' method='xml'/>
 
   <xsl:template match='/'>
     <html>
       <head>
         <title>XEP-<xsl:value-of select='/xep/header/number'/>:<xsl:text> </xsl:text><xsl:value-of select='/xep/header/title' /></title>
-        <link rel='stylesheet' type='text/css' href='xmpp.css' />
-        <link href="prettify.css" type="text/css" rel="stylesheet" />
-        <link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
-        <script type="text/javascript" src="prettify.js"></script>
+        <link rel='stylesheet' type='text/css' href='../xmpp.css' />
+        <link href="../prettify.css" type="text/css" rel="stylesheet" />
+        <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+        <script type="text/javascript" src="../prettify.js"></script>
+        <!-- making things mobile-friendly... -->
+        <meta>
+          <xsl:attribute name='name'><xsl:text>viewport</xsl:text></xsl:attribute>
+          <xsl:attribute name='content'>width=device-width; initial-scale=1.0; maximum-scale=2.0</xsl:attribute>
+        </meta>
         <!-- BEGIN META TAGS FOR DUBLIN CORE -->
         <meta>
           <xsl:attribute name='name'><xsl:text>DC.Title</xsl:text></xsl:attribute>
@@ -888,9 +893,9 @@ OR OTHER DEALINGS IN THE SOFTWARE.
   <xsl:template match='img'>
     <img>
       <xsl:attribute name='alt'><xsl:value-of select='@alt'/></xsl:attribute>
-      <!--<xsl:attribute name='height'><xsl:value-of select='@height'/></xsl:attribute>-->
+      <xsl:attribute name='height'><xsl:value-of select='@height'/></xsl:attribute>
       <xsl:attribute name='src'><xsl:value-of select='@src'/></xsl:attribute>
-      <!--<xsl:attribute name='width'><xsl:value-of select='@width'/></xsl:attribute>-->
+      <xsl:attribute name='width'><xsl:value-of select='@width'/></xsl:attribute>
     </img>
   </xsl:template>
 
