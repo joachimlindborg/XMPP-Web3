@@ -1643,9 +1643,10 @@ Host: clayster.com</text>
         </p>
     </section1>
     <section1 topic='XMPP Registrar Considerations' anchor='registrar'>
-        <!-- TODO -->
-        <p>REQUIRED.</p>
-    </section1>
+		<p>
+			The <link url="#schema">protocol schema</link> needs to be added to the list of <link url="http://xmpp.org/resources/schemas/">XMPP protocol schemas</link>.
+		</p>
+	</section1>
     <section1 topic='XML Schema' anchor='schema'>
         <code>
             <![CDATA[
